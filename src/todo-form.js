@@ -8,21 +8,28 @@ function createHtmlEl({tag="div", parent, props={}, textContent=""}) {
     return element;
 }
 
-function createHtmlLabelInput({parent, forName,
+function createHtmlLabelInput({parent, createDiv=true, forLabel, id, name,
     inputType="text", labelTextContent="", required=false} = {}) {
     const label = document.createElement("label");
     const input = document.createElement("input");
 
-    label.htmlFor = forName;
+    label.htmlFor = forLabel;
     label.textContent = labelTextContent;
 
-    input.setAttribute("id", forName);
-    input.setAttribute("name", forName);
-    input.setAttribute("type", inputType);
-    input.setAttribute("required", required);
+    Object.assign(input, {
+        id,
+        name,
+        type: inputType,
+        required
+    })
 
-    parent.appendChild(label, input)
-    parent.appendChild(input)
+    if (createDiv) {
+        const labelInputDiv = document.createElement("div");
+        labelInputDiv.append(label, input);
+        parent.appendChild(labelInputDiv)
+    } else {
+        parent.append(label, input);
+    }
 }
 
 
@@ -31,22 +38,26 @@ function createTodoItemForm() {
     const formDiv = createHtmlEl({tag: "div", parent: heroDiv, props: {className: "form-container"}});
     const formToDo = createHtmlEl({tag: "form", parent: formDiv, props: {className: "todo-form"},});
 
-    createHtmlLabelInput({
-        parent: formToDo,
-        forName: "title",
-        labelTextContent: "Title: ",
-        required: true});
-  
-        createHtmlLabelInput({
-            parent: formToDo,
-            forName: "due-date",
-            labelTextContent: "Due Date: ",
-            inputType: "date",
-            required: true});
+    const formFields = [
+        {forLabel: "title", labelTextContent: "Title: ",
+            required: true, id: "title", name: "title"},
+        {forLabel: "due-date",labelTextContent: "Due Date: ",
+            inputType: "date", required: true, id: "due-date", name: "due-date"}]
 
-    
-    // const priorityLabel = createHtmlLabelInput("label", formDiv, "Low-Priority");
-    // const priorityInput = createHtmlLabelInput("input", formDiv, {name: "low-priority", id: "low-priority", type: "checkbox"});
-}
+    formFields.forEach(field => createHtmlLabelInput({parent: formToDo, ...field}))
+
+    const priorities = ["high", "medium", "low"]
+    const prioritiesDiv = createHtmlEl({tag: "div", parent: formToDo});
+
+    priorities.forEach(priority => createHtmlLabelInput({
+        parent: prioritiesDiv, inputType: "radio", name: "priority",
+        createDiv: false, forLabel: priority, id: priority,
+        labelTextContent: priority.charAt(0).toUpperCase() + priority.slice(1),
+    }))
+
+    createHtmlEl({
+        tag: "button", parent: formToDo,
+        props: {id: "submit-btn"}, textContent: "Add Task"})
+    }
 
 export default createTodoItemForm
