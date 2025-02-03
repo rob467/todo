@@ -13,19 +13,25 @@ function createAddTaskButton() {
     })
     return addTaskButton
 }
-const addTodoDialog = addTodoForm.getFormDialog();
-const submitTaskBtn = addTodoForm.getSubmitTaskBtn();
-const cancelTaskBtn = addTodoForm.getCancelTaskBtn();
+
+function getFormElements () {
+    const addTodoDialog = addTodoForm.getFormDialog();
+    const submitTaskBtn = addTodoForm.getSubmitTaskBtn();
+    const cancelTaskBtn = addTodoForm.getCancelTaskBtn();
+    return { addTodoDialog, submitTaskBtn, cancelTaskBtn }
+}
+
+const formElements = getFormElements()
 const addTaskButton = createAddTaskButton()
 
 function handleSubmitTask() {
     const taskTitle = document.querySelector("#title");
     console.log(taskTitle.value);
-    addTodoDialog.close();
+    formElements.addTodoDialog.close();
 }
 
-addTaskButton.addEventListener("click", () => addTodoDialog.showModal())
-cancelTaskBtn.addEventListener("click", () => addTodoDialog.close())
-submitTaskBtn.addEventListener("click", () => handleSubmitTask())
+addTaskButton.addEventListener("click", () => formElements.addTodoDialog.showModal())
+formElements.cancelTaskBtn.addEventListener("click", () => formElements.addTodoDialog.close())
+formElements.submitTaskBtn.addEventListener("click", () => handleSubmitTask())
 
 export { createAddTaskButton }

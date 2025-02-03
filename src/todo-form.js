@@ -1,8 +1,8 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
 
 function createTodoItemForm() {
-    const heroDiv = document.querySelector(".hero")
-    const formDialog = createHtmlEl({tag: "dialog", parent: heroDiv, props: {className: "form-container"}});
+    const mainDiv = document.querySelector(".main")
+    const formDialog = createHtmlEl({tag: "dialog", parent: mainDiv, props: {className: "form-container"}});
     const formToDo = createHtmlEl({tag: "form", parent: formDialog, props: {className: "todo-form"},});
 
     const formFields = [
