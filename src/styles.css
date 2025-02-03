@@ -1,0 +1,19 @@
+.form-container {
+    background-color: aliceblue;
+    max-width: 250px;
+    margin: 10px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    height: 100vh;
+}
+
+.sidebar {
+    background-color: rgb(135, 175, 210);
+}
+
+.main {
+    background-color: aliceblue;
+}
