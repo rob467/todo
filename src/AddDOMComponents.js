@@ -18,8 +18,11 @@ function createHtmlLabelInput({parent, createDiv=true, forLabel, id, name,
         id,
         name,
         type: inputType,
-        required
     })
+
+    if (required) {
+        input.setAttribute("required", true)
+    }
 
     if (createDiv) {
         const labelInputDiv = document.createElement("div");
