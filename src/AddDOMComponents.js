@@ -7,7 +7,7 @@ function createHtmlEl({tag="div", parent, props={}, textContent=""}) {
 }
 
 function createHtmlLabelInput({parent, createDiv=true, forLabel, id, name,
-    inputType="text", labelTextContent="", required=false} = {}) {
+    inputType="text", labelTextContent="", required=false, enterValue=false} = {}) {
     const label = document.createElement("label");
     const input = document.createElement("input");
 
@@ -19,6 +19,10 @@ function createHtmlLabelInput({parent, createDiv=true, forLabel, id, name,
         name,
         type: inputType,
     })
+
+    if (enterValue){
+        input.setAttribute("value", id)
+    }
 
     if (required) {
         input.setAttribute("required", true)

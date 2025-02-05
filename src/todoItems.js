@@ -27,4 +27,10 @@ class Project {
     }
 }
 
-export { TodoItem, Project }
+function projectList() {
+    const projectList = [new Project("Other")]; //adds default other project
+    const getProjectList = () => projectList;
+    return { getProjectList }
+}
+
+export { TodoItem, Project, projectList }

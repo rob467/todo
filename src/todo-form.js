@@ -1,6 +1,9 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
+import { TodoItem, Project, projectList } from "./todoItems.js"
 
 function createTodoItemForm() {
+    const projects = projectList();
+
     const mainDiv = document.querySelector(".main")
     const formDialog = createHtmlEl({tag: "dialog", parent: mainDiv, props: {className: "form-container"}});
     const formToDo = createHtmlEl({tag: "form", parent: formDialog, props: {className: "todo-form"},});
@@ -15,24 +18,37 @@ function createTodoItemForm() {
 
     const priorities = ["high", "medium", "low"]
     const prioritiesDiv = createHtmlEl({tag: "div", parent: formToDo});
+    const projectsDiv = createHtmlEl({tag: "div", parent: formToDo});
 
     priorities.forEach(priority => createHtmlLabelInput({
         parent: prioritiesDiv, inputType: "radio", name: "priority",
-        createDiv: false, forLabel: priority, id: priority,
+        createDiv: false, forLabel: priority, id: priority, enterValue: true,
         labelTextContent: priority.charAt(0).toUpperCase() + priority.slice(1),
     }))
 
+    const selectProjectLabel = createHtmlEl({
+        tag: "label", parent: projectsDiv, textContent: "Project: "})
+        selectProjectLabel.htmlFor = "project-select"
+    const selectProjectElement = createHtmlEl({
+        tag: "select", parent: projectsDiv, props: {id: "project-select", name: "projects"}})
+    projects.getProjectList().toReversed().forEach(project => createHtmlEl({
+        tag: "option", parent: selectProjectElement,
+        props: {value: project.name},
+        textContent: project.name
+    }))
+    
     const getFormDialog = () => formDialog
+    const getToDoForm = () => formToDo
 
     const getSubmitTaskBtn = () => createHtmlEl({
         tag: "button", parent: formToDo,
-        props: {id: "submit-btn", type: "button"}, textContent: "Add Task"})
+        props: {id: "submit-btn", type: "submit"}, textContent: "Add Task"})
 
     const getCancelTaskBtn = () => createHtmlEl({
         tag: "button", parent: formToDo,
         props: {id: "cancel-btn"}, textContent: "Cancel"})
 
-    return { getFormDialog, getSubmitTaskBtn, getCancelTaskBtn }
+    return { getFormDialog, getToDoForm, getSubmitTaskBtn, getCancelTaskBtn }
     }
 
 export default createTodoItemForm

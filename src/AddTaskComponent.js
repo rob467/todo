@@ -1,6 +1,6 @@
 import { createHtmlEl } from "./AddDOMComponents.js"
 import createTodoItemForm from "./todo-form.js"
-import { TodoItem, Project } from "./todoItems.js"
+import { TodoItem, projectList } from "./todoItems.js"
 
 const addTodoForm = createTodoItemForm()
 
@@ -17,21 +17,32 @@ function createAddTaskButton() {
 function getFormElements () {
     const addTodoDialog = addTodoForm.getFormDialog();
     const submitTaskBtn = addTodoForm.getSubmitTaskBtn();
+    const addTaskForm = addTodoForm.getToDoForm();
     const cancelTaskBtn = addTodoForm.getCancelTaskBtn();
-    return { addTodoDialog, submitTaskBtn, cancelTaskBtn }
+    return { addTodoDialog, submitTaskBtn, cancelTaskBtn, addTaskForm }
 }
 
 const formElements = getFormElements()
 const addTaskButton = createAddTaskButton()
+const projects = projectList().getProjectList()
 
-function handleSubmitTask() {
+function handleSubmitTask(event) {
+    event.preventDefault();
     const taskTitle = document.querySelector("#title");
-    console.log(taskTitle.value);
-    formElements.addTodoDialog.close();
+    const projectSelection = document.querySelector("#project-select");
+    const dueDate = document.querySelector("#due-date");
+    const priority = document.querySelector("input[name='priority']:checked");
+    projects.forEach(project => {
+        if (project.name === projectSelection.value) {
+            project.addTodoItem(taskTitle.value, dueDate.value, priority.value)
+    }})
+    console.log(projects)
+    formElements.addTodoDialog.close()
+ 
 }
 
 addTaskButton.addEventListener("click", () => formElements.addTodoDialog.showModal())
 formElements.cancelTaskBtn.addEventListener("click", () => formElements.addTodoDialog.close())
-formElements.submitTaskBtn.addEventListener("click", () => handleSubmitTask())
+formElements.addTaskForm.addEventListener("submit", handleSubmitTask)
 
 export { createAddTaskButton }
