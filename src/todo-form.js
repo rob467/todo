@@ -1,5 +1,5 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
-import { TodoItem, Project, projectList } from "./todoItems.js"
+import { projectList } from "./todoItems.js"
 
 function createTodoItemForm() {
     const projects = projectList();

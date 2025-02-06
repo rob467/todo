@@ -6,6 +6,7 @@
 
 .sidebar {
     background-color: rgb(135, 175, 210);
+    padding: 10px;
 }
 
 .main {
@@ -28,3 +29,13 @@ button:hover {
     margin: auto;
 }
 
+ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+.project-task-lists {
+    margin-left: 10px;
+    font-size: 14px;
+}

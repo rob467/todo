@@ -1,8 +1,8 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
-import { TodoItem, Project, projectList } from "./todoItems.js"
+import { Project, projectList } from "./todoItems.js"
 
 function addProjectsComponent() {
-    const projects = projectList();
+    const projects = projectList().getProjectList();
 
     // Create project dialog window for adding projects
     function addProjectDialog() {
@@ -57,7 +57,7 @@ function addProjectsComponent() {
 
     const projectElements = (function getProjectsElements () {
         const addProjectsDialog = projectDialog.getProjectDialog();
-        const submitProjBtn = projectDialog.getSubmitProjectBtn();
+        const submitProjBtn = projectDialog.getSubmitProjectBtn()
         const cancelProjBtn = projectDialog.getCancelTaskBtn();
         const projectForm = projectDialog.getProjectForm();
         return { addProjectsDialog, cancelProjBtn, projectForm }
@@ -73,7 +73,7 @@ function addProjectsComponent() {
         while (selectProject.firstChild) {
             selectProject.removeChild(selectProject.firstChild)
         }
-        projects.getProjectList().toReversed().forEach(project => createHtmlEl({
+        projects.toReversed().forEach(project => createHtmlEl({
             tag: "option", parent: selectProject,
             props: {value: project.name},
             textContent: project.name
@@ -85,12 +85,12 @@ function addProjectsComponent() {
         const projTitle = document.querySelector("#project-title");
         let projTitleValue = projTitle.value
 
-        const projExists = projects.getProjectList().some(project => project.name === projTitleValue)
+        const projExists = projects.some(project => project.name === projTitleValue)
         if (projExists) {
             projTitle.setCustomValidity("Project already exists!");
         } else {
             projTitle.setCustomValidity("");
-            projects.getProjectList().push(new Project(projTitle.value));
+            projects.push(new Project(projTitle.value));
             updateAddTaskForm()
             projTitle.value = "";
             projectElements.addProjectsDialog.close();
@@ -108,17 +108,32 @@ function addProjectsComponent() {
     projectElements.cancelProjBtn.addEventListener("click",
         () => projectElements.addProjectsDialog.close())
     projectElements.projectForm.addEventListener("submit", handleSubmitProject);
-
+    
+    function renderTaskList(project) {
+        const projectListElement = document.querySelector(`#${project.name}-li`)
+        const taskListElement = createHtmlEl({
+            tag: "ul", parent: projectListElement,
+            props: {className: "project-task-lists"}
+        })
+        project.todoList.forEach(todoTask => createHtmlEl({
+            tag: "li", parent: taskListElement,
+            textContent: todoTask.title
+        }))
+    }
     function renderProjectsList() {
         while (projectSidebar.projectsList.firstChild) {
             projectSidebar.projectsList.removeChild(
                 projectSidebar.projectsList.firstChild
             )
         }
-        projects.getProjectList().toReversed().forEach(project => createHtmlEl({
-            tag: "li", parent: projectSidebar.projectsList, textContent: project.name
-        }))
+        projects.toReversed().forEach(project => {createHtmlEl({
+            tag: "li", parent: projectSidebar.projectsList, 
+            props: {"id": `${project.name}-li`}, textContent: project.name
+        });
+        renderTaskList(project)
+    })
     }
+    return { projects, renderProjectsList}
 }
 
 export default addProjectsComponent
