@@ -1,8 +1,5 @@
-import { TodoItem, Project } from "./todoItems.js"
-import createTodoItemForm from "./todo-form.js"
-import taskComponent from "./AddTaskComponent.js"
-import addProjectsComponent from "./ProjectsComponent.js"
+import renderSidebar from "./RenderSidebarComponent.js"
 import "./styles.css"
 import "./reset-styles.css"
 
-taskComponent()
+renderSidebar()
