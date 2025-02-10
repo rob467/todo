@@ -1,6 +1,7 @@
 import { createHtmlEl } from "./AddDOMComponents.js"
 import createTodoItemForm from "./todo-form.js"
 import addProjectsComponent  from "./ProjectsComponent.js"
+import getProjectCards from "./MainProjectViewComponent.js"
 
 function taskComponent() {
     function createAddTaskButton() {
@@ -37,6 +38,7 @@ function taskComponent() {
                 project.addTodoItem(taskTitle.value, dueDate.value, priority.value)
         }})
         console.log(projectsList)
+        getProjectCards();
         projectsList.renderProjectsList()
         formElements.addTodoDialog.close()
     }

@@ -115,10 +115,12 @@ function addProjectsComponent() {
             tag: "ul", parent: projectListElement,
             props: {className: "project-task-lists"}
         })
-        project.todoList.forEach(todoTask => createHtmlEl({
+        project.todoList.forEach(todoTask => {
+            console.log(todoTask);
+            createHtmlEl({
             tag: "li", parent: taskListElement,
             textContent: todoTask.title
-        }))
+        })})
     }
     function renderProjectsList() {
         while (projectSidebar.projectsList.firstChild) {
