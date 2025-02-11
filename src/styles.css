@@ -40,7 +40,7 @@ ul {
     font-size: 14px;
 }
 
-.sidebar-logo-svg {
+.logo-svg {
     width: 25px;
     height: 25px;
 }
@@ -53,19 +53,28 @@ ul {
 
 .main-projects-container {
     display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     margin: 10px;
     gap: 5px;
 }
 
 .project-card {
     min-height: 200px;
-    min-width: 150px;
-    max-width: 150px;
+    min-width: 200px;
+    /* max-width: 150px; */
     background-color: rgb(157, 212, 212);
     border: 1px solid black;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
+    align-items: center;
+}
+
+.task-main {
+    display: flex;
+    justify-content: space-between;
+    min-width: 180px;
     align-items: center;
 }

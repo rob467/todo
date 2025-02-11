@@ -16,7 +16,7 @@ function renderCalendarList() {
         createHtmlEl({
         tag: "img",
         parent: listItem,
-        props: {src: symbol[0], className:"sidebar-logo-svg"}
+        props: {src: symbol[0], className:"logo-svg"}
         })
         createHtmlEl({
             tag: "span",
