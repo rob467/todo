@@ -22,7 +22,7 @@ function createTodoItemForm() {
 
     priorities.forEach(priority => createHtmlLabelInput({
         parent: prioritiesDiv, inputType: "radio", name: "priority",
-        createDiv: false, forLabel: priority, id: priority, enterValue: true,
+        createDiv: false, forLabel: priority, id: priority, required: true, enterValue: true,
         labelTextContent: priority.charAt(0).toUpperCase() + priority.slice(1),
     }))
 

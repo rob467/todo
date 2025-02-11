@@ -50,3 +50,22 @@ ul {
     gap: 5px;
     margin: 5px;
 }
+
+.main-projects-container {
+    display: grid;
+    margin: 10px;
+    gap: 5px;
+}
+
+.project-card {
+    min-height: 200px;
+    min-width: 150px;
+    max-width: 150px;
+    background-color: rgb(157, 212, 212);
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+}

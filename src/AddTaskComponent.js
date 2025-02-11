@@ -1,7 +1,7 @@
 import { createHtmlEl } from "./AddDOMComponents.js"
 import createTodoItemForm from "./todo-form.js"
 import addProjectsComponent  from "./ProjectsComponent.js"
-import getProjectCards from "./MainProjectViewComponent.js"
+import renderMainProjectComponent from "./MainProjectViewComponent.js"
 
 function taskComponent() {
     function createAddTaskButton() {
@@ -26,6 +26,8 @@ function taskComponent() {
     const formElements = getFormElements()
     const addTaskButton = createAddTaskButton()
     const projectsList = addProjectsComponent()
+    const renderProjects = renderMainProjectComponent(projectsList.projects);
+    renderProjects.getProjectCards()
 
     function handleSubmitTask(event) {
         event.preventDefault();
@@ -37,8 +39,7 @@ function taskComponent() {
             if (project.name === projectSelection.value) {
                 project.addTodoItem(taskTitle.value, dueDate.value, priority.value)
         }})
-        console.log(projectsList)
-        getProjectCards();
+        renderProjects.getProjectCards();
         projectsList.renderProjectsList()
         formElements.addTodoDialog.close()
     }

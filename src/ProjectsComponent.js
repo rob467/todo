@@ -1,8 +1,10 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
 import { Project, projectList } from "./todoItems.js"
+import renderMainProjectComponent from "./MainProjectViewComponent.js"
 
 function addProjectsComponent() {
     const projects = projectList().getProjectList();
+    const renderMainProjectSection = renderMainProjectComponent(projects)
 
     // Create project dialog window for adding projects
     function addProjectDialog() {
@@ -91,7 +93,8 @@ function addProjectsComponent() {
         } else {
             projTitle.setCustomValidity("");
             projects.push(new Project(projTitle.value));
-            updateAddTaskForm()
+            updateAddTaskForm();
+            renderMainProjectSection.getProjectCards()
             projTitle.value = "";
             projectElements.addProjectsDialog.close();
             renderProjectsList();
@@ -116,7 +119,6 @@ function addProjectsComponent() {
             props: {className: "project-task-lists"}
         })
         project.todoList.forEach(todoTask => {
-            console.log(todoTask);
             createHtmlEl({
             tag: "li", parent: taskListElement,
             textContent: todoTask.title
