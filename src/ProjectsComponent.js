@@ -24,11 +24,11 @@ function addProjectsComponent() {
             tag: "button", parent: projectForm,
             props: {id: "submit-project-btn", type: "submit"}, textContent: "Add Project"})
 
-        const getCancelTaskBtn = () => createHtmlEl({
+        const getCancelProjBtn = () => createHtmlEl({
             tag: "button", parent: projectForm,
-            props: {id: "cancel-project-btn"}, textContent: "Cancel"})
+            props: {id: "cancel-project-btn", type: "button"}, textContent: "Cancel"})
         
-        return { getProjectDialog, getProjectForm, getSubmitProjectBtn, getCancelTaskBtn }
+        return { getProjectDialog, getProjectForm, getSubmitProjectBtn, getCancelProjBtn }
     }
 
     // Renders project info in sidebar;
@@ -60,14 +60,14 @@ function addProjectsComponent() {
     const projectElements = (function getProjectsElements () {
         const addProjectsDialog = projectDialog.getProjectDialog();
         const submitProjBtn = projectDialog.getSubmitProjectBtn()
-        const cancelProjBtn = projectDialog.getCancelTaskBtn();
+        const cancelProjBtn = projectDialog.getCancelProjBtn();
         const projectForm = projectDialog.getProjectForm();
         return { addProjectsDialog, cancelProjBtn, projectForm }
     })()
 
     const projectSidebar = projectsSidebarElement()
 
-    renderProjectsList();
+    // renderProjectsList();
 
     // Updates add task form to include new project options
     function updateAddTaskForm() {
@@ -125,6 +125,7 @@ function addProjectsComponent() {
         })})
     }
     function renderProjectsList() {
+        // projectSidebar.projectListsDiv
         while (projectSidebar.projectsList.firstChild) {
             projectSidebar.projectsList.removeChild(
                 projectSidebar.projectsList.firstChild
@@ -137,7 +138,7 @@ function addProjectsComponent() {
         renderTaskList(project)
     })
     }
-    return { projects, renderProjectsList}
+    return { projects, renderProjectsList, renderTaskList}
 }
 
 export default addProjectsComponent

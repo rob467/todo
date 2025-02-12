@@ -26,8 +26,9 @@ function taskComponent() {
     const formElements = getFormElements()
     const addTaskButton = createAddTaskButton()
     const projectsList = addProjectsComponent()
-    const renderProjects = renderMainProjectComponent(projectsList.projects);
-    renderProjects.getProjectCards()
+    projectsList.renderProjectsList()
+    const renderMainProjects = renderMainProjectComponent(projectsList.projects);
+    renderMainProjects.getProjectCards()
 
     function handleSubmitTask(event) {
         event.preventDefault();
@@ -39,9 +40,10 @@ function taskComponent() {
             if (project.name === projectSelection.value) {
                 project.addTodoItem(taskTitle.value, dueDate.value, priority.value)
         }})
-        renderProjects.getProjectCards();
-        projectsList.renderProjectsList()
-        formElements.addTodoDialog.close()
+        renderMainProjects.getProjectCards();
+        projectsList.renderProjectsList();
+        renderMainProjects.removeTaskOnCheck();
+        formElements.addTodoDialog.close();
     }
 
     addTaskButton.addEventListener("click", () => formElements.addTodoDialog.showModal())

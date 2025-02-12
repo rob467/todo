@@ -72,9 +72,14 @@ ul {
     align-items: center;
 }
 
-.task-main {
+.task-main, .project-heading {
     display: flex;
     justify-content: space-between;
     min-width: 180px;
     align-items: center;
+}
+
+.task-marked-completed {
+    text-decoration: line-through;
+    color: darkgray;
 }

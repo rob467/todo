@@ -6,13 +6,26 @@ function createHtmlEl({tag="div", parent, props={}, textContent=""}) {
     return element;
 }
 
-function createHtmlLabelInput({parent, createDiv=true, forLabel, id, name,
-    inputType="text", labelTextContent="", required=false, enterValue=false} = {}) {
+function createHtmlLabelInput({
+    parent, createDiv=false, forLabel, id, name,
+    inputType="text", labelTextContent="", required=false,
+    enterValue=false, reverseInputOrder=false, labelClass=""
+    } = {}) {
     const label = document.createElement("label");
     const input = document.createElement("input");
+    let parentDiv;
+    if (createDiv) {
+        parentDiv = document.createElement("div");
+        parent.appendChild(parentDiv);
+    } else {
+        parentDiv = parent;
+    }
 
     label.htmlFor = forLabel;
     label.textContent = labelTextContent;
+    if (labelClass) {
+        label.classList.add(labelClass)
+    }
 
     Object.assign(input, {
         id,
@@ -28,12 +41,10 @@ function createHtmlLabelInput({parent, createDiv=true, forLabel, id, name,
         input.setAttribute("required", true)
     }
 
-    if (createDiv) {
-        const labelInputDiv = document.createElement("div");
-        labelInputDiv.append(label, input);
-        parent.appendChild(labelInputDiv)
+    if (!reverseInputOrder){
+        parentDiv.append(label, input);
     } else {
-        parent.append(label, input);
+        parentDiv.append(input, label);
     }
 }
 

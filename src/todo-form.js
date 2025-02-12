@@ -22,7 +22,7 @@ function createTodoItemForm() {
 
     priorities.forEach(priority => createHtmlLabelInput({
         parent: prioritiesDiv, inputType: "radio", name: "priority",
-        createDiv: false, forLabel: priority, id: priority, required: true, enterValue: true,
+        forLabel: priority, id: priority, required: true, enterValue: true,
         labelTextContent: priority.charAt(0).toUpperCase() + priority.slice(1),
     }))
 
@@ -46,7 +46,7 @@ function createTodoItemForm() {
 
     const getCancelTaskBtn = () => createHtmlEl({
         tag: "button", parent: formToDo,
-        props: {id: "cancel-btn"}, textContent: "Cancel"})
+        props: {id: "cancel-btn", type: "button"}, textContent: "Cancel"})
 
     return { getFormDialog, getToDoForm, getSubmitTaskBtn, getCancelTaskBtn }
     }

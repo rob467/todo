@@ -1,8 +1,8 @@
 import addProjectsComponent from "./ProjectsComponent.js"
 import { Project, projectList } from "./todoItems.js"
-import { format, formatters, isToday, isTomorrow } from "date-fns";
+import { format, isToday, isTomorrow } from "date-fns";
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
-import expandBtn from "./svgs/bars-solid.svg"
+import maxBtn from "./svgs/maximize-solid.svg"
 import editBtn from "./svgs/pen-solid.svg"
 
 function renderMainProjectComponent(projectsList) {
@@ -21,7 +21,7 @@ function renderMainProjectComponent(projectsList) {
 
     const projects = projectsList;
 
-    // Calculates if date is today, tomorrow or further in future and returns that as a string
+    // Calculates if date is today, tomorrow or further in future and returns as string
     function formatCloseDates(date) {
         if (isToday(date)) {
             return "Today"
@@ -31,15 +31,28 @@ function renderMainProjectComponent(projectsList) {
             return format(date, "dd-MMM-yyyy")
         }
     }
+    function handleCheckedTask() {
+    }
+
+
     function renderTaskDetails(task, projectDiv) {
         const taskDiv = createHtmlEl({
-            tag: "div", parent: projectDiv, props: {className: "task-main"}
+            tag: "div", parent: projectDiv, props: {className: `task-main ${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}-div`}
         })
+
+        createHtmlLabelInput({
+            parent: taskDiv,
+            createDiv: true,
+            forLabel: task.title.replace(/[^a-zA-Z0-9-_]/g, '-'),
+            id: task.title.replace(/[^a-zA-Z0-9-_]/g, '-'),
+            inputType: "checkbox",
+            labelTextContent: task.title,
+            reverseInputOrder: true,
+            labelClass: `${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}-label`
+        })
+
         createHtmlEl(
-            {tag: "h4", parent: taskDiv, textContent: task.title}
-        )
-        createHtmlEl(
-            {tag: "h4", parent: taskDiv, textContent: formatCloseDates(task.dueDate)}
+            {tag: "h5", parent: taskDiv, textContent: formatCloseDates(task.dueDate)}
         )
         }
     
@@ -54,21 +67,45 @@ function renderMainProjectComponent(projectsList) {
                 props: {className: "project-card", id: `${project.name.replace(/\s+/g, '-')}-card`},
             })
             const projectCardHeadingDiv = createHtmlEl({
-                tag: "div", parent: projectCardDiv, props: {className: "task-main"}
+                tag: "div", parent: projectCardDiv, props: {className: "project-heading"}
             })
+
             createHtmlEl({
                 tag: "h3", parent: projectCardHeadingDiv, textContent: project.name
             })
             createHtmlEl({
                 tag: "img", parent: projectCardHeadingDiv,
-                props: {src: expandBtn, className:"logo-svg"}
+                props: {src: maxBtn, className:"logo-svg"}
             })
-            project.todoList.forEach(task => renderTaskDetails(task, projectCardDiv))
+            let sortedByDateProjects = project.todoList.sort((a, b) => a.dueDate - b.dueDate)
+            sortedByDateProjects.forEach(task => renderTaskDetails(task, projectCardDiv))
         }
 
         projects.toReversed().forEach(project => createProjectCard(project))
     }
-    return { getProjectCards }
+
+    function removeTaskOnCheck() {
+        // Get sidebar projects div for rerendering
+        projectsList.forEach(project => project.todoList.forEach(task => {
+            const taskCheckbox = document.querySelector(`#${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`)
+            const taskMainDiv = document.querySelector(`.${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}-div`)
+            taskCheckbox.addEventListener("change", () => {
+                console.log(project.todoList)
+                    // while (projectsSidebar.firstChild) {
+                    //     projectsSidebar.removeChild(projectsSidebar.firstChild)
+                    // }
+                    project.todoList = project.todoList.filter(
+                        allTasks => allTasks.title !== task.title
+                    )
+                    taskMainDiv.remove()
+                    // addProjectsComponent().renderTaskList(project)
+                })
+            console.log(project.todoList)
+        }))
+        console.log(projectsList)
+    }
+
+    return { getProjectCards, removeTaskOnCheck }
 }
 
 export default renderMainProjectComponent
