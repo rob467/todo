@@ -1,11 +1,13 @@
-import addProjectsComponent from "./ProjectsComponent.js"
-import { Project, projectList } from "./todoItems.js"
+import { addProjectsComponent } from "./ProjectsComponent.js"
+import { Project, projectList, sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
-import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
+import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
 import maxBtn from "./svgs/maximize-solid.svg"
 import editBtn from "./svgs/pen-solid.svg"
 
-function renderMainProjectComponent(projectsList) {
+const sharedProjects = sharedProjectsFactory();
+
+function renderMainProjectComponent() {
     const mainDiv = document.querySelector(".main");
     let mainProjectsDiv;
 
@@ -19,8 +21,6 @@ function renderMainProjectComponent(projectsList) {
         mainProjectsDiv;
     }
 
-    const projects = projectsList;
-
     // Calculates if date is today, tomorrow or further in future and returns as string
     function formatCloseDates(date) {
         if (isToday(date)) {
@@ -31,24 +31,28 @@ function renderMainProjectComponent(projectsList) {
             return format(date, "dd-MMM-yyyy")
         }
     }
+
     function handleCheckedTask() {
     }
 
 
     function renderTaskDetails(task, projectDiv) {
         const taskDiv = createHtmlEl({
-            tag: "div", parent: projectDiv, props: {className: `task-main ${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}-div`}
+            tag: "div", parent: projectDiv, 
+            props: {
+                className: `task-main div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
+            }
         })
 
         createHtmlLabelInput({
             parent: taskDiv,
             createDiv: true,
-            forLabel: task.title.replace(/[^a-zA-Z0-9-_]/g, '-'),
-            id: task.title.replace(/[^a-zA-Z0-9-_]/g, '-'),
+            forLabel: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`,
+            id: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`,
             inputType: "checkbox",
             labelTextContent: task.title,
             reverseInputOrder: true,
-            labelClass: `${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}-label`
+            labelClass: `cl-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}-label`
         })
 
         createHtmlEl(
@@ -64,7 +68,7 @@ function renderMainProjectComponent(projectsList) {
         
         function createProjectCard(project) {
             const projectCardDiv = createHtmlEl({tag: "div", parent: mainProjectsDiv,
-                props: {className: "project-card", id: `${project.name.replace(/\s+/g, '-')}-card`},
+                props: {className: "project-card", id: `card-${project.name.replace(/\s+/g, '-')}`},
             })
             const projectCardHeadingDiv = createHtmlEl({
                 tag: "div", parent: projectCardDiv, props: {className: "project-heading"}
@@ -77,35 +81,42 @@ function renderMainProjectComponent(projectsList) {
                 tag: "img", parent: projectCardHeadingDiv,
                 props: {src: maxBtn, className:"logo-svg"}
             })
-            let sortedByDateProjects = project.todoList.sort((a, b) => a.dueDate - b.dueDate)
-            sortedByDateProjects.forEach(task => renderTaskDetails(task, projectCardDiv))
+            let sortedByDateProjects = project.getTodos().sort(
+                (a, b) => a.dueDate - b.dueDate
+            )
+            sortedByDateProjects.forEach(
+                task => renderTaskDetails(task, projectCardDiv)
+            )
         }
 
-        projects.toReversed().forEach(project => createProjectCard(project))
+        sharedProjects.getAllProjects().toReversed().forEach(
+            project => createProjectCard(project)
+        )
     }
+    return { getProjectCards }
+} 
 
-    function removeTaskOnCheck() {
-        // Get sidebar projects div for rerendering
-        projectsList.forEach(project => project.todoList.forEach(task => {
-            const taskCheckbox = document.querySelector(`#${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`)
-            const taskMainDiv = document.querySelector(`.${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}-div`)
-            taskCheckbox.addEventListener("change", () => {
-                console.log(project.todoList)
-                    // while (projectsSidebar.firstChild) {
-                    //     projectsSidebar.removeChild(projectsSidebar.firstChild)
-                    // }
-                    project.todoList = project.todoList.filter(
-                        allTasks => allTasks.title !== task.title
-                    )
-                    taskMainDiv.remove()
-                    // addProjectsComponent().renderTaskList(project)
-                })
-            console.log(project.todoList)
-        }))
-        console.log(projectsList)
-    }
 
-    return { getProjectCards, removeTaskOnCheck }
+
+function removeTaskOnCheck() {
+    sharedProjects.getAllProjects().forEach(
+        project => project.getTodos().forEach(task => {
+
+        const taskCheckbox = document.querySelector(
+            `#id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+        )
+
+        const taskMainDiv = document.querySelector(
+            `.div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+        )
+
+        taskCheckbox.addEventListener("change", () => {
+                project.removeTodo(task.title)
+                taskMainDiv.remove()
+                addProjectsComponent().renderTaskList(project)
+            })
+    }))
 }
 
-export default renderMainProjectComponent
+
+export {renderMainProjectComponent, removeTaskOnCheck}

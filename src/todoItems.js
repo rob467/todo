@@ -17,20 +17,55 @@ class Project {
         this.todoList = [];
     }
     
-    addTodoItem(title, dueDate, priority, description="") {
+    addTodo(title, dueDate, priority, description="") {
         let todoItem = new TodoItem(title, dueDate, priority, description)
         this.todoList.push(todoItem)
     }
 
-    getItems() {
+    removeTodo(title) {
+        this.todoList = this.todoList.filter(todo => todo.title !== title)
+        // if (index >= 0 && index < this.todoList.length) {
+        //   this.todoList.splice(index, 1);
+        // }
+      }
+
+    getTodos() {
         return this.todoList;
     }
 }
 
+const sharedProjectsFactory = (() => {
+    let instance = null;
+    return () => {
+    if (!instance) {
+        instance = {
+            projects: [new Project("Other")],
+
+            addProject(title) {
+                const newProject = new Project(title);
+                this.projects.push(newProject);
+            },
+
+            removeProject(title) {
+                this.projects = this.projects.filter(project => project.title !== title)
+            },
+
+            getProject(title) {
+                return this.projects.find(project => project.title === title)
+            },
+
+            getAllProjects() {
+                return this.projects;
+            },
+        }
+    }
+    return instance
+    }
+})()
+
 function projectList() {
-    const projectList = [new Project("Other")]; //adds default other project
     const getProjectList = () => projectList;
     return { getProjectList }
 }
 
-export { TodoItem, Project, projectList }
+export { Project, projectList, sharedProjectsFactory }

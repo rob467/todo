@@ -1,18 +1,12 @@
 import { createHtmlEl } from "./AddDOMComponents.js"
 import createTodoItemForm from "./todo-form.js"
-import addProjectsComponent  from "./ProjectsComponent.js"
-import renderMainProjectComponent from "./MainProjectViewComponent.js"
+import { addProjectsComponent }  from "./ProjectsComponent.js"
+import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
+import { getInitialSidebarElements } from "./RenderSidebarComponent.js"
+import { sharedProjectsFactory } from "./todoItems.js"
 
+const sharedProjects = sharedProjectsFactory()
 function taskComponent() {
-    function createAddTaskButton() {
-        const sidebarDiv = document.querySelector(".sidebar");
-        const addTaskButton = createHtmlEl({
-            tag: "button",
-            parent: sidebarDiv,
-            textContent: "Add Task"
-        })
-        return addTaskButton
-    }
 
     function getFormElements () {
         const addTodoForm = createTodoItemForm()
@@ -23,11 +17,12 @@ function taskComponent() {
         return { addTodoDialog, submitTaskBtn, cancelTaskBtn, addTaskForm }
     }
 
+    const initialSidebar = getInitialSidebarElements();
     const formElements = getFormElements()
-    const addTaskButton = createAddTaskButton()
-    const projectsList = addProjectsComponent()
-    projectsList.renderProjectsList()
-    const renderMainProjects = renderMainProjectComponent(projectsList.projects);
+    const addTaskButton = initialSidebar.addTaskBtn
+    const projectComponent = addProjectsComponent()
+    projectComponent.renderProjectsList()
+    const renderMainProjects = renderMainProjectComponent();
     renderMainProjects.getProjectCards()
 
     function handleSubmitTask(event) {
@@ -36,13 +31,14 @@ function taskComponent() {
         const projectSelection = document.querySelector("#project-select");
         const dueDate = document.querySelector("#due-date");
         const priority = document.querySelector("input[name='priority']:checked");
-        projectsList.projects.forEach(project => {
+        sharedProjects.getAllProjects().forEach(project => {
             if (project.name === projectSelection.value) {
-                project.addTodoItem(taskTitle.value, dueDate.value, priority.value)
+                project.addTodo(taskTitle.value, dueDate.value, priority.value)
         }})
         renderMainProjects.getProjectCards();
-        projectsList.renderProjectsList();
-        renderMainProjects.removeTaskOnCheck();
+        projectComponent.renderProjectsList();
+        console.log(sharedProjects.getAllProjects())
+        removeTaskOnCheck();
         formElements.addTodoDialog.close();
     }
 

@@ -48,5 +48,10 @@ function createHtmlLabelInput({
     }
 }
 
+function removeAllChildren(element) {
+    while (element.firstChild) {
+        element.removeChild(element.firstChild)
+    }
+}
 
-export { createHtmlEl, createHtmlLabelInput }
+export { createHtmlEl, createHtmlLabelInput, removeAllChildren }

@@ -1,11 +1,12 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
-import { projectList } from "./todoItems.js"
+import { projectList, sharedProjectsFactory } from "./todoItems.js"
+
+const sharedProjects = sharedProjectsFactory();
 
 function createTodoItemForm() {
-    const projects = projectList();
 
     const mainDiv = document.querySelector(".main")
-    const formDialog = createHtmlEl({tag: "dialog", parent: mainDiv, props: {className: "form-container"}});
+    const formDialog = createHtmlEl({tag: "dialog", parent: mainDiv, props: {className: "form-dialog", id: "add-task-dialog"}});
     const formToDo = createHtmlEl({tag: "form", parent: formDialog, props: {className: "todo-form"},});
 
     const formFields = [
@@ -31,7 +32,7 @@ function createTodoItemForm() {
         selectProjectLabel.htmlFor = "project-select"
     const selectProjectElement = createHtmlEl({
         tag: "select", parent: projectsDiv, props: {id: "project-select", name: "projects"}})
-    projects.getProjectList().toReversed().forEach(project => createHtmlEl({
+    sharedProjects.getAllProjects().toReversed().forEach(project => createHtmlEl({
         tag: "option", parent: selectProjectElement,
         props: {value: project.name},
         textContent: project.name

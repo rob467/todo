@@ -13,7 +13,7 @@
     background-color: aliceblue;
 }
 
-.projects-heading {
+.projects-heading-container {
     display: flex;
     gap: 10px;
 }
@@ -22,7 +22,7 @@ button:hover {
     cursor: pointer;
 }
 
-.form-container {
+.form-dialog {
     background-color: aliceblue;
     max-width: 250px;
     min-height: 100px;
