@@ -1,9 +1,8 @@
-import { addProjectsComponent, renderProjectComponent } from "./ProjectsComponent.js"
-import { Project, projectList, sharedProjectsFactory } from "./todoItems.js"
+import { renderProjectComponent } from "./ProjectsComponent.js"
+import { sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
 import maxBtn from "./svgs/maximize-solid.svg"
-import editBtn from "./svgs/pen-solid.svg"
 
 const sharedProjects = sharedProjectsFactory();
 
@@ -46,7 +45,7 @@ function renderMainProjectComponent() {
             forLabel: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`,
             id: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`,
             inputType: "checkbox",
-            labelTextContent: task.title,
+            labelTextContent: ` ${task.title}`,
             reverseInputOrder: true,
             labelClass: `cl-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}-label`
         })
@@ -54,8 +53,7 @@ function renderMainProjectComponent() {
         createHtmlEl(
             {tag: "h5", parent: taskDiv, textContent: formatCloseDates(task.dueDate)}
         )
-        }
-    
+    }
 
     function getProjectCards() {
         while (mainProjectsDiv.firstChild) {

@@ -9,7 +9,7 @@ function createHtmlEl({tag="div", parent, props={}, textContent=""}) {
 function createHtmlLabelInput({
     parent, createDiv=false, forLabel, id, name,
     inputType="text", labelTextContent="", required=false,
-    enterValue=false, reverseInputOrder=false, labelClass=""
+    reverseInputOrder=false, labelClass="", value=""
     } = {}) {
     const label = document.createElement("label");
     const input = document.createElement("input");
@@ -33,8 +33,8 @@ function createHtmlLabelInput({
         type: inputType,
     })
 
-    if (enterValue){
-        input.setAttribute("value", id)
+    if (value){
+        input.setAttribute("value", value)
     }
 
     if (required) {

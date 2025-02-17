@@ -30,13 +30,14 @@ function taskComponent() {
         event.preventDefault();
         const taskForm = document.querySelector(".todo-form");
         const taskTitle = document.querySelector("#title");
-        const projectSelection = document.querySelector("#project-select");
         const dueDate = document.querySelector("#due-date");
+        const projectSelection = document.querySelector("#project-select");
         const priority = document.querySelector("input[name='priority']:checked");
+        const description = document.querySelector("#task-description");
 
         sharedProjects.getAllProjects().forEach(project => {
             if (project.name === projectSelection.value) {
-                project.addTodo(taskTitle.value, dueDate.value, priority.value)
+                project.addTodo(taskTitle.value, dueDate.value, priority.value, description.value)
         }})
         renderMainProjects.getProjectCards();
         projectComponent.renderProjectsList();

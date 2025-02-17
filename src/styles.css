@@ -45,6 +45,11 @@ ul {
     height: 25px;
 }
 
+.logo-svg-small {
+    width: 15px;
+    height: 15px;
+}
+
 .calendar-list {
     display: flex;
     gap: 5px;

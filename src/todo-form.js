@@ -1,5 +1,6 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
 import { projectList, sharedProjectsFactory } from "./todoItems.js"
+import { format } from "date-fns";
 
 const sharedProjects = sharedProjectsFactory();
 
@@ -13,9 +14,14 @@ function createTodoItemForm() {
         {forLabel: "title", labelTextContent: "Title: ",
             required: true, id: "title", name: "title"},
         {forLabel: "due-date",labelTextContent: "Due Date: ",
-            inputType: "date", required: true, id: "due-date", name: "due-date"}]
+            inputType: "date", required: true, id: "due-date",
+            name: "due-date"}
+        ]
 
     formFields.forEach(field => createHtmlLabelInput({parent: formToDo, ...field}))
+
+    const dueDateInput = document.querySelector("#due-date");
+    dueDateInput.valueAsDate = new Date();
 
     const priorities = ["high", "medium", "low"]
     const prioritiesDiv = createHtmlEl({tag: "div", parent: formToDo});
@@ -23,7 +29,7 @@ function createTodoItemForm() {
 
     priorities.forEach(priority => createHtmlLabelInput({
         parent: prioritiesDiv, inputType: "radio", name: "priority",
-        forLabel: priority, id: priority, required: true, enterValue: true,
+        forLabel: priority, id: priority, required: true, value: priority,
         labelTextContent: priority.charAt(0).toUpperCase() + priority.slice(1),
     }))
 
@@ -37,7 +43,24 @@ function createTodoItemForm() {
         props: {value: project.name},
         textContent: project.name
     }))
-    
+
+    const descriptionDiv = createHtmlEl({parent: formToDo})
+    const descriptionLabel = createHtmlEl({
+        tag: "label",
+        parent: descriptionDiv,
+        textContent: "Description: "
+    })
+    descriptionLabel.htmlFor = "task-description"
+    const descriptionTextArea = createHtmlEl({
+        tag: "textarea",
+        parent: descriptionDiv,
+        props: {
+            id: "task-description",
+            name: "task-description"
+        }
+    })
+    descriptionTextArea.setAttribute("rows", 3)
+    descriptionTextArea.setAttribute("columns", 4)
     const getFormDialog = () => formDialog
     const getToDoForm = () => formToDo
 
