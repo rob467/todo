@@ -1,6 +1,6 @@
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
 import { Project, projectList, sharedProjectsFactory } from "./todoItems.js"
-import { renderMainProjectComponent } from "./MainProjectViewComponent.js"
+import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
 
 const sharedProjects = sharedProjectsFactory()
 
@@ -64,6 +64,7 @@ function addProjectsComponent() {
 
     function handleSubmitProject(event) {
         event.preventDefault();
+        const projectForm = document.querySelector(".project-form");
         const projTitle = document.querySelector("#project-title");
         let projTitleValue = projTitle.value
 
@@ -74,11 +75,11 @@ function addProjectsComponent() {
             projTitle.setCustomValidity("");
             sharedProjects.addProject(projTitle.value);
             updateAddTaskForm();
-            console.log(sharedProjects.getAllProjects())
-            renderMainProjectComponent().getProjectCards()
-            projTitle.value = "";
+            renderMainProjectComponent().getProjectCards();
+            projectForm.reset();
             projectDialog.close();
-            renderProjectsList();
+            renderProjectComponent().renderProjectsList();
+            removeTaskOnCheck();
         }
 
         projTitle.reportValidity();
@@ -93,7 +94,9 @@ function addProjectsComponent() {
     projectElements.cancelProjBtn.addEventListener("click",
         () => projectDialog.close())
     projectElements.projectForm.addEventListener("submit", handleSubmitProject);
+    }
 
+function renderProjectComponent(){
     function renderProjectsList() {
         const projectSidebarList = document.querySelector(".projects-sidebar-list")
         removeAllChildren(projectSidebarList)
@@ -128,9 +131,7 @@ function addProjectsComponent() {
             textContent: todoTask.title
         })})
     }
-
-
     return { renderProjectsList, renderTaskList}
 }
 
-export { addProjectsComponent }
+export { addProjectsComponent, renderProjectComponent }

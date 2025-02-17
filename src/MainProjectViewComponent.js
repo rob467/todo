@@ -1,4 +1,4 @@
-import { addProjectsComponent } from "./ProjectsComponent.js"
+import { addProjectsComponent, renderProjectComponent } from "./ProjectsComponent.js"
 import { Project, projectList, sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
@@ -31,10 +31,6 @@ function renderMainProjectComponent() {
             return format(date, "dd-MMM-yyyy")
         }
     }
-
-    function handleCheckedTask() {
-    }
-
 
     function renderTaskDetails(task, projectDiv) {
         const taskDiv = createHtmlEl({
@@ -96,27 +92,27 @@ function renderMainProjectComponent() {
     return { getProjectCards }
 } 
 
-
-
-function removeTaskOnCheck() {
+function handleCheckedTask() {
     sharedProjects.getAllProjects().forEach(
-        project => project.getTodos().forEach(task => {
-
-        const taskCheckbox = document.querySelector(
-            `#id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
-        )
+        project => 
+            project.getTodos().forEach(task => {
 
         const taskMainDiv = document.querySelector(
             `.div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
         )
-
-        taskCheckbox.addEventListener("change", () => {
-                project.removeTodo(task.title)
-                taskMainDiv.remove()
-                addProjectsComponent().renderTaskList(project)
-            })
+        project.removeTodo(task.title)
+        taskMainDiv.remove()
+        renderProjectComponent().renderTaskList(project)
     }))
 }
+
+function removeTaskOnCheck() {
+    sharedProjects.getAllProjects().forEach(
+        project => 
+            project.getTodos().forEach(task => {
+        const taskCheckbox = document.querySelector(`#id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`)
+        taskCheckbox.addEventListener("change", handleCheckedTask)}))
+    }
 
 
 export {renderMainProjectComponent, removeTaskOnCheck}

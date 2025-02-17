@@ -1,6 +1,5 @@
-import { createHtmlEl } from "./AddDOMComponents.js"
 import createTodoItemForm from "./todo-form.js"
-import { addProjectsComponent }  from "./ProjectsComponent.js"
+import { addProjectsComponent, renderProjectComponent }  from "./ProjectsComponent.js"
 import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
 import { getInitialSidebarElements } from "./RenderSidebarComponent.js"
 import { sharedProjectsFactory } from "./todoItems.js"
@@ -17,27 +16,31 @@ function taskComponent() {
         return { addTodoDialog, submitTaskBtn, cancelTaskBtn, addTaskForm }
     }
 
+    // Get initial elements and render project components
     const initialSidebar = getInitialSidebarElements();
     const formElements = getFormElements()
     const addTaskButton = initialSidebar.addTaskBtn
-    const projectComponent = addProjectsComponent()
-    projectComponent.renderProjectsList()
+    addProjectsComponent();
+    const projectComponent = renderProjectComponent();
+    projectComponent.renderProjectsList();
     const renderMainProjects = renderMainProjectComponent();
-    renderMainProjects.getProjectCards()
+    renderMainProjects.getProjectCards();
 
     function handleSubmitTask(event) {
         event.preventDefault();
+        const taskForm = document.querySelector(".todo-form");
         const taskTitle = document.querySelector("#title");
         const projectSelection = document.querySelector("#project-select");
         const dueDate = document.querySelector("#due-date");
         const priority = document.querySelector("input[name='priority']:checked");
+
         sharedProjects.getAllProjects().forEach(project => {
             if (project.name === projectSelection.value) {
                 project.addTodo(taskTitle.value, dueDate.value, priority.value)
         }})
         renderMainProjects.getProjectCards();
         projectComponent.renderProjectsList();
-        console.log(sharedProjects.getAllProjects())
+        taskForm.reset();
         removeTaskOnCheck();
         formElements.addTodoDialog.close();
     }
