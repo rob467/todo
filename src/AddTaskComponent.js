@@ -44,6 +44,7 @@ function taskComponent() {
         taskForm.reset();
         removeTaskOnCheck();
         formElements.addTodoDialog.close();
+        dueDate.valueAsDate = new Date();
     }
 
     addTaskButton.addEventListener("click", () => formElements.addTodoDialog.showModal())

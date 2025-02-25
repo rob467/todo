@@ -7,9 +7,11 @@ import { createSingleTaskDialog } from "./SingleTaskDialogComponent.js"
 import maxBtn from "./svgs/maximize-solid.svg"
 
 const sharedProjects = sharedProjectsFactory();
+const taskDialog = createSingleTaskDialog();
 
 function renderMainProjectComponent() {
     const mainDiv = document.querySelector(".main");
+        
     let mainProjectsDiv;
 
     if (!document.body.contains(document.querySelector(".main-projects-container"))) {
@@ -57,23 +59,70 @@ function renderMainProjectComponent() {
         })
 
         createHtmlEl({
-            tag: "h5", parent: taskTextDiv, textContent: ` ${task.title}`
+            tag: "h5",
+            parent: taskTextDiv,
+            props: {id: `heading-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`},
+            textContent: ` ${task.title}`
         })
 
-        createHtmlEl(
-            {tag: "h5", parent: taskTextDiv, textContent: formatCloseDates(task.dueDate)}
-        )
-        const taskDialog = createSingleTaskDialog(task, project)
+        createHtmlEl({
+            tag: "h5",
+            parent: taskTextDiv,
+            props: {id: `heading-date-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`},
+            textContent: formatCloseDates(task.dueDate)
+        })
 
         taskTextDiv.addEventListener("click", () => {
+            document.querySelector("#edit-title").value = task.title
+            document.querySelector("#edit-due-date").valueAsDate = new Date(task.dueDate.toString());
+            document.querySelector("#edit-task-description").value = task.description
+            
+            let priorityEl = document.querySelector(`#edit-${task.priority}`)
+            if (priorityEl.value === task.priority) {
+                priorityEl.setAttribute("checked", true);
+            }
             taskDialog.getFormDialog().showModal();
         })
 
-        
+        document.querySelector("#edit-submit-btn").addEventListener(
+            "click", (e) => {
+                e.preventDefault();
+                console.log("working?")
+                const currentTask = (
+                    sharedProjects.getProject(project.name).getTodo(task.title)
+                )
 
-        taskDialog.getCancelTaskBtn().addEventListener("click", () => {
-            taskDialog.getFormDialog().close();
-        })
+                const renderedTitle = document.querySelector(
+                    `#heading-${
+                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
+                    }`
+                )
+                
+                const renderedDate = document.querySelector(
+                    `#heading-date-${
+                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
+                    }`
+                )
+
+                currentTask.title = document.querySelector(
+                    "#edit-title").value
+                currentTask.dueDate = document.querySelector(
+                    "#edit-due-date").value
+                currentTask.priority = document.querySelector(
+                    "input[name='edit-priority']:checked").value
+                currentTask.description = document.querySelector(
+                    "#edit-task-description").value
+
+                
+                renderedTitle.textContent = currentTask.title
+                renderedDate.textContent = formatCloseDates(currentTask.dueDate)
+
+                taskDialog.getFormDialog().close()
+            }
+        )
+
+        document.querySelector("#edit-cancel-btn").addEventListener(
+            "click", () => {taskDialog.getFormDialog().close();})
     }
 
     function getProjectCards() {

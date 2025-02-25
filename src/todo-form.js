@@ -1,6 +1,5 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
 import { projectList, sharedProjectsFactory } from "./todoItems.js"
-import { format } from "date-fns";
 
 const sharedProjects = sharedProjectsFactory();
 
