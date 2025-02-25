@@ -2,6 +2,8 @@ import { renderProjectComponent } from "./ProjectsComponent.js"
 import { sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
+import { createSingleTaskDialog } from "./SingleTaskDialogComponent.js"
+
 import maxBtn from "./svgs/maximize-solid.svg"
 
 const sharedProjects = sharedProjectsFactory();
@@ -31,28 +33,47 @@ function renderMainProjectComponent() {
         }
     }
 
-    function renderTaskDetails(task, projectDiv) {
+    function renderTaskDetails(task, project) {
+        const projectDiv = document.querySelector(`#card-${project.name.replace(/\s+/g, '-')}`)
+
         const taskDiv = createHtmlEl({
             tag: "div", parent: projectDiv, 
             props: {
-                className: `task-main div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
+                className: `task-main`,
+                id: `div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
             }
         })
 
         createHtmlLabelInput({
             parent: taskDiv,
             createDiv: true,
-            forLabel: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`,
             id: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`,
             inputType: "checkbox",
-            labelTextContent: ` ${task.title}`,
             reverseInputOrder: true,
-            labelClass: `cl-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}-label`
+        })
+
+        const taskTextDiv = createHtmlEl({
+            parent: taskDiv, props: {className: "task-text-div"}
+        })
+
+        createHtmlEl({
+            tag: "h5", parent: taskTextDiv, textContent: ` ${task.title}`
         })
 
         createHtmlEl(
-            {tag: "h5", parent: taskDiv, textContent: formatCloseDates(task.dueDate)}
+            {tag: "h5", parent: taskTextDiv, textContent: formatCloseDates(task.dueDate)}
         )
+        const taskDialog = createSingleTaskDialog(task, project)
+
+        taskTextDiv.addEventListener("click", () => {
+            taskDialog.getFormDialog().showModal();
+        })
+
+        
+
+        taskDialog.getCancelTaskBtn().addEventListener("click", () => {
+            taskDialog.getFormDialog().close();
+        })
     }
 
     function getProjectCards() {
@@ -61,9 +82,14 @@ function renderMainProjectComponent() {
         }
         
         function createProjectCard(project) {
-            const projectCardDiv = createHtmlEl({tag: "div", parent: mainProjectsDiv,
-                props: {className: "project-card", id: `card-${project.name.replace(/\s+/g, '-')}`},
+            const projectCardDiv = createHtmlEl({
+                tag: "div", parent: mainProjectsDiv,
+                props: {
+                    className: "project-card",
+                    id: `card-${project.name.replace(/\s+/g, '-')}`
+                },
             })
+
             const projectCardHeadingDiv = createHtmlEl({
                 tag: "div", parent: projectCardDiv, props: {className: "project-heading"}
             })
@@ -71,15 +97,18 @@ function renderMainProjectComponent() {
             createHtmlEl({
                 tag: "h3", parent: projectCardHeadingDiv, textContent: project.name
             })
+
             createHtmlEl({
                 tag: "img", parent: projectCardHeadingDiv,
                 props: {src: maxBtn, className:"logo-svg"}
             })
-            let sortedByDateProjects = project.getTodos().sort(
+
+            let sortedByDateProjects = project.getAllTodos().sort(
                 (a, b) => a.dueDate - b.dueDate
             )
+
             sortedByDateProjects.forEach(
-                task => renderTaskDetails(task, projectCardDiv)
+                task => renderTaskDetails(task, project)
             )
         }
 
@@ -93,10 +122,10 @@ function renderMainProjectComponent() {
 function handleCheckedTask() {
     sharedProjects.getAllProjects().forEach(
         project => 
-            project.getTodos().forEach(task => {
+            project.getAllTodos().forEach(task => {
 
         const taskMainDiv = document.querySelector(
-            `.div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+            `#div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
         )
         project.removeTodo(task.title)
         taskMainDiv.remove()
@@ -107,8 +136,10 @@ function handleCheckedTask() {
 function removeTaskOnCheck() {
     sharedProjects.getAllProjects().forEach(
         project => 
-            project.getTodos().forEach(task => {
-        const taskCheckbox = document.querySelector(`#id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`)
+            project.getAllTodos().forEach(task => {
+        const taskCheckbox = document.querySelector(
+            `#id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
+        )
         taskCheckbox.addEventListener("change", handleCheckedTask)}))
     }
 

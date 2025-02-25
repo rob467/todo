@@ -29,7 +29,11 @@ class Project {
         // }
       }
 
-    getTodos() {
+    getTodo(title) {
+        return this.todoList.find(todo => todo.title === title)
+    }
+
+    getAllTodos() {
         return this.todoList;
     }
 }
@@ -46,12 +50,12 @@ const sharedProjectsFactory = (() => {
                 this.projects.push(newProject);
             },
 
-            removeProject(title) {
-                this.projects = this.projects.filter(project => project.title !== title)
+            removeProject(name) {
+                this.projects = this.projects.filter(project => project.name !== name)
             },
 
-            getProject(title) {
-                return this.projects.find(project => project.title === title)
+            getProject(name) {
+                return this.projects.find(project => project.name === name)
             },
 
             getAllProjects() {

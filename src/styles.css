@@ -79,7 +79,7 @@ ul {
 
 .task-main, .project-heading {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     min-width: 180px;
     align-items: center;
 }
@@ -87,4 +87,15 @@ ul {
 .task-marked-completed {
     text-decoration: line-through;
     color: darkgray;
+}
+
+.task-text-div {
+    display: flex;
+    justify-content: space-between;
+    width: 85%;
+}
+
+.btns-div {
+    display: flex;
+    justify-content: space-evenly;
 }

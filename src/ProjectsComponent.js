@@ -125,7 +125,7 @@ function renderProjectComponent(){
         const taskListElement = document.querySelector(`#todo-list-${project.name.replace(/[^a-zA-Z0-9]/g, "-")}`)
         removeAllChildren(taskListElement)
         
-        project.getTodos().forEach(todoTask => {
+        project.getAllTodos().forEach(todoTask => {
             createHtmlEl({
             tag: "li", parent: taskListElement,
             textContent: todoTask.title
