@@ -1,5 +1,5 @@
 import createTodoItemForm from "./todo-form.js"
-import { addProjectsComponent, renderProjectComponent }  from "./ProjectsComponent.js"
+import { renderProjectComponent }  from "./ProjectsComponent.js"
 import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
 import { getInitialSidebarElements } from "./RenderSidebarComponent.js"
 import { sharedProjectsFactory } from "./todoItems.js"
@@ -20,7 +20,6 @@ function taskComponent() {
     const initialSidebar = getInitialSidebarElements();
     const formElements = getFormElements()
     const addTaskButton = initialSidebar.addTaskBtn
-    addProjectsComponent();
     const projectComponent = renderProjectComponent();
     projectComponent.renderProjectsList();
     const renderMainProjects = renderMainProjectComponent();

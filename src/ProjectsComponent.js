@@ -1,101 +1,64 @@
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
 import { Project, projectList, sharedProjectsFactory } from "./todoItems.js"
 import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
+import createModal from "./ModalComponent.js"
 
 const sharedProjects = sharedProjectsFactory()
 
-function createProjectDialog() {
-    const mainDiv = document.querySelector(".main")
-    const projectDialog = createHtmlEl({tag: "dialog", parent: mainDiv,
-        props: {className: "form-dialog", id: "project-dialog"}});
-    const projectForm = createHtmlEl({tag: "form", parent: projectDialog,
-        props: {className: "project-form", id: "add-project"},});
+const projectModal = createModal({
+    id: "project-test-dialog",
+    parent: document.querySelector(".main"),
+    content: [{
+                type: "input",
+                forLabel: "project-title",
+                labelText: "Project Title: ",
+                inputProps: {
+                    id: "project-title",
+                    name: "project-title"},
+                required: true}],
+    buttons: {
+        Save: (modal) => {
+            const data = modal.getFormData();
+            const projectTitle = document.querySelector("#project-title")
+            const projExists = sharedProjects.getAllProjects().some(
+                project => project.name === data["project-title"])
 
-    const getProjectDialog = () => projectDialog
-    const getProjectForm = () => projectForm
+            if (data["project-title"] === "") {
+                projectTitle.setCustomValidity("Project title required!");
+            } else if (projExists){
+                projectTitle.setCustomValidity(
+                    `${data["project-title"]} already exists!`
+                );
+            } else {
+                projectTitle.setCustomValidity("")
+                sharedProjects.addProject(data["project-title"])
 
-    createHtmlLabelInput({
-        parent: projectForm,
-        forLabel: "project-title",
-        labelText: "Project Title: ",
-        inputProps: {id: "project-title",},
-        required: true
-    })
-        
-    createHtmlEl({
-        tag: "button", parent: projectForm,
-        props: {id: "submit-project-btn", type: "submit"},
-        textContent: "Add Project"
-    })
+                modal.dialog.close();
+                modal.form.reset();
 
-    createHtmlEl({
-        tag: "button", parent: projectForm,
-        props: {id: "cancel-project-btn", type: "button"},
-        textContent: "Cancel"
-    })
-    
-    return { getProjectDialog, getProjectForm }
+                // Rendering & updating task form to include new projects
+                updateAddTaskForm();
+                renderMainProjectComponent().getProjectCards();
+                renderProjectComponent().renderProjectsList();
+                removeTaskOnCheck();
+            }
+            projectTitle.reportValidity()
+        }
+    }
+})
+
+// Updates add task form to include new project options
+function updateAddTaskForm() {
+    const selectProject = document.querySelector("#project-select")
+    while (selectProject.firstChild) {
+        selectProject.removeChild(selectProject.firstChild)
+    }
+    sharedProjects.getAllProjects().toReversed().forEach(project => createHtmlEl({
+        tag: "option", parent: selectProject,
+        props: {value: project.name},
+        textContent: project.name
+    }))
 }
-
-createProjectDialog();
-
-function addProjectsComponent() {
-
-    const projectDialog = document.querySelector("#project-dialog")
-
-    const projectElements = (function getProjectsElements () {
-        const submitProjBtn = document.querySelector("#submit-project-btn")
-        const cancelProjBtn = document.querySelector("#cancel-project-btn")
-        const projectForm = document.querySelector(".project-form")
-        return { cancelProjBtn, projectForm }
-    })()
-
-    // Updates add task form to include new project options
-    function updateAddTaskForm() {
-        const selectProject = document.querySelector("#project-select")
-        while (selectProject.firstChild) {
-            selectProject.removeChild(selectProject.firstChild)
-        }
-        sharedProjects.getAllProjects().toReversed().forEach(project => createHtmlEl({
-            tag: "option", parent: selectProject,
-            props: {value: project.name},
-            textContent: project.name
-        }))
-    }
-
-    function handleSubmitProject(event) {
-        event.preventDefault();
-        const projectForm = document.querySelector(".project-form");
-        const projTitle = document.querySelector("#project-title");
-        let projTitleValue = projTitle.value
-
-        const projExists = sharedProjects.getAllProjects().some(project => project.name === projTitleValue)
-        if (projExists) {
-            projTitle.setCustomValidity("Project already exists!");
-        } else {
-            projTitle.setCustomValidity("");
-            sharedProjects.addProject(projTitle.value);
-            updateAddTaskForm();
-            renderMainProjectComponent().getProjectCards();
-            projectForm.reset();
-            projectDialog.close();
-            renderProjectComponent().renderProjectsList();
-            removeTaskOnCheck();
-        }
-
-        projTitle.reportValidity();
-        projTitle.addEventListener("input", function(){
-            this.setCustomValidity("");
-        })
-    }
-
-    const addProjectsBtn = document.querySelector("#add-project-btn")
-    addProjectsBtn.addEventListener("click",
-        () => projectDialog.showModal())
-    projectElements.cancelProjBtn.addEventListener("click",
-        () => projectDialog.close())
-    projectElements.projectForm.addEventListener("submit", handleSubmitProject);
-    }
 
 function renderProjectComponent(){
     function renderProjectsList() {
@@ -135,4 +98,4 @@ function renderProjectComponent(){
     return { renderProjectsList, renderTaskList}
 }
 
-export { addProjectsComponent, renderProjectComponent }
+export { renderProjectComponent, projectModal }

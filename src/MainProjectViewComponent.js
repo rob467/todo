@@ -1,4 +1,4 @@
-import { renderProjectComponent } from "./ProjectsComponent.js"
+// import { renderProjectComponent } from "./ProjectsComponent.js"
 import { sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"

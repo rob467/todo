@@ -3,6 +3,7 @@ import renderCalendarList from "./CalendarComponent.js"
 // import { renderProjectSidebarHeading } from "./ProjectsComponent.js"
 import { createHtmlEl } from "./AddDOMComponents.js"
 import { removeTaskOnCheck } from "./MainProjectViewComponent.js"
+import { projectModal } from "./ProjectsComponent.js"
 
 
 function createInitialSidebarElements() {
@@ -25,11 +26,13 @@ function createInitialSidebarElements() {
         tag: "h2", parent: projectHeadingDiv, textContent: "Projects"
     })
     
-    createHtmlEl({
+    const addProjectBtn = createHtmlEl({
         tag: "button", parent: projectHeadingDiv, props: {
             id: "add-project-btn", type: "submit"},
         textContent: "+"
     })
+
+    addProjectBtn.onclick = () => projectModal.open();
     
     const projectListsDiv = createHtmlEl({
         tag:"div", parent: sidebarDiv, props: {className: "projects-sidebar-list-container"}
