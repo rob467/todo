@@ -1,51 +1,64 @@
-function createHtmlEl({tag="div", parent, props={}, textContent=""}) {
-    let element = document.createElement(tag);
+function createHtmlEl({
+    tag = "div",
+    parent,
+    props = {},
+    textContent = "",
+    children = [],
+    appendOrder = "normal", // "reverse" to reverse child appending
+} = {}) {
+
+    const element = document.createElement(tag);
     Object.assign(element, props);
-    element.textContent = textContent;
-    parent.append(element);
+
+    if (textContent) element.textContent = textContent;
+
+    if (children.length) {
+        if (appendOrder === "reversed") {
+            children.reverse().forEach(child => element.appendChild(child))
+        } else {
+            children.forEach(child => element.appendChild(child))
+        }
+    }
+
+    if (parent) parent.append(element);
     return element;
 }
 
 function createHtmlLabelInput({
-    parent, createDiv=false, forLabel, id, name,
-    inputType="text", labelTextContent="", required=false,
-    reverseInputOrder=false, labelClass="", value=""
-    } = {}) {
-    const label = document.createElement("label");
-    const input = document.createElement("input");
-    let parentDiv;
-    if (createDiv) {
-        parentDiv = document.createElement("div");
-        parent.appendChild(parentDiv);
-    } else {
-        parentDiv = parent;
-    }
+    parent,
+    inputProps = {},
+    labelProps = {},
+    labelText = "",
+    inputType = "text",
+    reverseOrder = false,
+    required = false,
+    value="",
+    wrapperTag = "div",
+    wrapperProps = {}
+} = {}) {
 
-    label.htmlFor = forLabel;
-    label.textContent = labelTextContent;
-    if (labelClass) {
-        label.classList.add(labelClass)
-    }
+    const input = createHtmlEl({
+        tag: "input",
+        props: { type: inputType, ...inputProps }
+    });
 
-    Object.assign(input, {
-        id,
-        name,
-        type: inputType,
+    if (value) input.setAttribute("value", value);
+    if (required) input.setAttribute("required", true);
+
+    const label = createHtmlEl({
+        tag: "label",
+        textContent: labelText,
+        props: {htmlFor: inputProps.id, ...labelProps}
+    });
+
+    const wrapper = createHtmlEl({
+        tag: wrapperTag,
+        parent,
+        props: wrapperProps,
+        children: reverseOrder ? [input, label] : [label, input]
     })
 
-    if (value){
-        input.setAttribute("value", value)
-    }
-
-    if (required) {
-        input.setAttribute("required", true)
-    }
-
-    if (!reverseInputOrder){
-        parentDiv.append(label, input);
-    } else {
-        parentDiv.append(input, label);
-    }
+    return wrapper;
 }
 
 function removeAllChildren(element) {

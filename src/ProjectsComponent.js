@@ -17,9 +17,10 @@ function createProjectDialog() {
     createHtmlLabelInput({
         parent: projectForm,
         forLabel: "project-title",
-        labelTextContent: "Project Title: ",
-        required: true, id: "project-title",
-        name: "project-title"})
+        labelText: "Project Title: ",
+        inputProps: {id: "project-title",},
+        required: true
+    })
         
     createHtmlEl({
         tag: "button", parent: projectForm,

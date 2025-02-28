@@ -6,15 +6,30 @@ const sharedProjects = sharedProjectsFactory();
 function createTodoItemForm() {
 
     const mainDiv = document.querySelector(".main")
-    const formDialog = createHtmlEl({tag: "dialog", parent: mainDiv, props: {className: "form-dialog", id: "add-task-dialog"}});
-    const formToDo = createHtmlEl({tag: "form", parent: formDialog, props: {className: "todo-form"},});
+    const formDialog = createHtmlEl({
+        tag: "dialog",
+        parent: mainDiv,
+        props: {className: "form-dialog", id: "add-task-dialog"}});
+    const formToDo = createHtmlEl({
+        tag: "form",
+        parent: formDialog,
+        props: {className: "todo-form"},});
 
     const formFields = [
-        {forLabel: "title", labelTextContent: "Title: ",
-            required: true, id: "title", name: "title"},
-        {forLabel: "due-date",labelTextContent: "Due Date: ",
-            inputType: "date", required: true, id: "due-date",
-            name: "due-date"}
+        {
+            labelText: "Title: ",
+            inputType: "text", 
+            inputProps: {id: "title"},
+            labelProps: {name: "title"},
+            required: true,
+        },
+        {
+            labelText: "Due Date: ",
+            inputType: "date", 
+            inputProps: {id: "due-date"},
+            labelProps: {name: "due-date"},
+            required: true,
+        }
         ]
 
     formFields.forEach(field => createHtmlLabelInput({parent: formToDo, ...field}))
@@ -23,14 +38,21 @@ function createTodoItemForm() {
     dueDateInput.valueAsDate = new Date();
 
     const priorities = ["high", "medium", "low"]
-    const prioritiesDiv = createHtmlEl({tag: "div", parent: formToDo});
-    const projectsDiv = createHtmlEl({tag: "div", parent: formToDo});
+    const prioritiesDiv = createHtmlEl({
+        parent: formToDo,
+        props: {className: "priorities-div"}})
 
     priorities.forEach(priority => createHtmlLabelInput({
-        parent: prioritiesDiv, inputType: "radio", name: "priority",
-        forLabel: priority, id: priority, required: true, value: priority,
-        labelTextContent: priority.charAt(0).toUpperCase() + priority.slice(1),
+        parent: prioritiesDiv,
+        labelText: priority.charAt(0).toUpperCase() + priority.slice(1),
+        inputType: "radio",
+        inputProps: {id: priority, name: "priority", value: priority},
+        required: true,
     }))
+
+    const projectsDiv = createHtmlEl({
+        parent: formToDo,
+    })
 
     const selectProjectLabel = createHtmlEl({
         tag: "label", parent: projectsDiv, textContent: "Project: "})
@@ -49,17 +71,19 @@ function createTodoItemForm() {
         parent: descriptionDiv,
         textContent: "Description: "
     })
+
     descriptionLabel.htmlFor = "task-description"
     const descriptionTextArea = createHtmlEl({
         tag: "textarea",
         parent: descriptionDiv,
         props: {
             id: "task-description",
-            name: "task-description"
+            name: "task-description",
+            rows: 3,
+            columns: 4
         }
     })
-    descriptionTextArea.setAttribute("rows", 3)
-    descriptionTextArea.setAttribute("columns", 4)
+    
     const getFormDialog = () => formDialog
     const getToDoForm = () => formToDo
 

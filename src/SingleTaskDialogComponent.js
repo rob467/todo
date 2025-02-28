@@ -64,8 +64,10 @@ function createSingleTaskDialog() {
                 name: "edit-task-description"
             }
         })
+
         descriptionTextArea.setAttribute("rows", 3)
         descriptionTextArea.setAttribute("columns", 4)
+        
         const getFormDialog = () => taskDialog
         const getEditTaskForm = () => taskForm
 

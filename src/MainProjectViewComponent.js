@@ -58,14 +58,14 @@ function renderMainProjectComponent() {
             parent: taskDiv, props: {className: "task-text-div"}
         })
 
-        createHtmlEl({
+        const titleHeading = createHtmlEl({
             tag: "h5",
             parent: taskTextDiv,
             props: {id: `heading-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`},
             textContent: ` ${task.title}`
         })
 
-        createHtmlEl({
+        const dateHeading = createHtmlEl({
             tag: "h5",
             parent: taskTextDiv,
             props: {id: `heading-date-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`},
@@ -81,45 +81,54 @@ function renderMainProjectComponent() {
             if (priorityEl.value === task.priority) {
                 priorityEl.setAttribute("checked", true);
             }
+
             taskDialog.getFormDialog().showModal();
+
+            const submitBtn = document.querySelector("#edit-submit-btn")
+
+            submitBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+    
+                    task.title = document.querySelector(
+                        "#edit-title").value
+                    task.dueDate = document.querySelector(
+                        "#edit-due-date").value
+                    task.priority = document.querySelector(
+                        "input[name='edit-priority']:checked").value
+                    task.description = document.querySelector(
+                        "#edit-task-description").value
+    
+                    taskDiv.setAttribute("id", `div-${
+                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
+                    )
+    
+                    titleHeading.textContent = task.title
+                    titleHeading.setAttribute("id", `#heading-${
+                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
+                        }`)
+    
+                    dateHeading.textContent = formatCloseDates(task.dueDate)
+                    dateHeading.setAttribute("id", `#heading-date-${
+                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
+                        }`)
+                    console.log(sharedProjects.getProject(project.name))
+    
+                    renderProjectComponent().renderTaskList(project)
+    
+                    taskDialog.getFormDialog().close()
+                }
+            )
+
+            const deleteBtn = document.querySelector("#delete-task-btn")
+            deleteBtn.addEventListener("click", () => {
+                    sharedProjects.getProject(project.name).removeTodo(task.title)
+                    renderProjectComponent().renderTaskList(project)
+                    taskDiv.remove()
+    
+                    taskDialog.getFormDialog().close()
+                }
+            )
         })
-
-        document.querySelector("#edit-submit-btn").addEventListener(
-            "click", (e) => {
-                e.preventDefault();
-                console.log("working?")
-                const currentTask = (
-                    sharedProjects.getProject(project.name).getTodo(task.title)
-                )
-
-                const renderedTitle = document.querySelector(
-                    `#heading-${
-                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
-                    }`
-                )
-                
-                const renderedDate = document.querySelector(
-                    `#heading-date-${
-                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
-                    }`
-                )
-
-                currentTask.title = document.querySelector(
-                    "#edit-title").value
-                currentTask.dueDate = document.querySelector(
-                    "#edit-due-date").value
-                currentTask.priority = document.querySelector(
-                    "input[name='edit-priority']:checked").value
-                currentTask.description = document.querySelector(
-                    "#edit-task-description").value
-
-                
-                renderedTitle.textContent = currentTask.title
-                renderedDate.textContent = formatCloseDates(currentTask.dueDate)
-
-                taskDialog.getFormDialog().close()
-            }
-        )
 
         document.querySelector("#edit-cancel-btn").addEventListener(
             "click", () => {taskDialog.getFormDialog().close();})
