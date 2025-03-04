@@ -37,10 +37,13 @@ class Project {
 
     removeTodo(id) {
         this.todoList = this.todoList.filter(todo => todo.id !== id)
-        // if (index >= 0 && index < this.todoList.length) {
-        //   this.todoList.splice(index, 1);
-        // }
       }
+
+    removeTodoByIndex(index) {
+        if (index >= 0 && index < this.todoList.length) {
+          this.todoList.splice(index, 1);
+        }
+    }
 
     getTodo(id) {
         return this.todoList.find(todo => todo.id === id)
@@ -78,6 +81,10 @@ const sharedProjectsFactory = (() => {
             getAllProjects() {
                 return this.projects;
             },
+
+            getProjectByChildTask(taskId) {
+                return this.projects.find(project => project.getTodo(taskId))
+            }
         }
     }
     return instance

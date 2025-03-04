@@ -1,7 +1,7 @@
-// import { renderProjectComponent } from "./ProjectsComponent.js"
 import { sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
+import { renderProjectComponent } from "./ProjectsComponent.js"
 import { editTaskModal } from "./EditTaskModal.js"
 
 import maxBtn from "./svgs/maximize-solid.svg"
@@ -36,25 +36,31 @@ function renderMainProjectComponent() {
     }
 
     function renderTaskDetails(task, project) {
-        const projectDiv = document.querySelector(`#card-${project.name.replace(/\s+/g, '-')}`)
+        const projectDiv = document.querySelector(`#card-${project.id}`)
 
         const taskDiv = createHtmlEl({
             tag: "div", parent: projectDiv, 
             props: {
                 className: `task-main`,
-                id: `div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
+                id: `container-task-${task.id}`
             }
         })
 
-        createHtmlLabelInput({
+        const taskCheckbox = createHtmlLabelInput({
             parent: taskDiv,
             createDiv: true,
             inputProps: {
-                id: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
+                id: `check-${task.id}`
             },
             inputType: "checkbox",
             reverseInputOrder: true,
         })
+
+        taskCheckbox.onclick = () => {
+            project.removeTodo(task.id)
+            taskMainDiv.remove();
+            renderProjectComponent().renderProjectsList()
+        }
 
         const taskTextDiv = createHtmlEl({
             parent: taskDiv, props: {className: "task-text-div"}
@@ -63,34 +69,25 @@ function renderMainProjectComponent() {
         const titleHeading = createHtmlEl({
             tag: "h5",
             parent: taskTextDiv,
-            props: {id: `heading-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`},
+            props: {id: `heading-${task.id}`},
             textContent: ` ${task.title}`
         })
 
         const dateHeading = createHtmlEl({
             tag: "h5",
             parent: taskTextDiv,
-            props: {id: `heading-date-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`},
+            props: {id: `heading-date-${task.id}`},
             textContent: formatCloseDates(task.dueDate)
         })
 
         taskTextDiv.onclick = () => {
-            // editTaskModal.editForm("edit")
             document.querySelector("#edit-title").value = task.title
             document.querySelector("#edit-date").valueAsDate = task.dueDate
             document.querySelector("#task-id").value = task.id
+            document.querySelector("#edit-project-select").value = project.id
             document.querySelector(
                 `#edit-priority-${task.priority}`).setAttribute("checked", true)
-            console.log(editTaskModal.getFormData())
             editTaskModal.open()
-        
-            // deleteBtn.addEventListener("click", () => {
-            //         sharedProjects.getProject(project.name).removeTodo(task.title)
-            //         taskDiv.remove()
-    
-            //         taskDialog.getFormDialog().close()
-            //     }
-            // )
         };
     }
 
@@ -105,7 +102,7 @@ function renderMainProjectComponent() {
                 tag: "div", parent: mainProjectsDiv,
                 props: {
                     className: "project-card",
-                    id: `card-${project.name.replace(/\s+/g, '-')}`
+                    id: `card-${project.id}`
                 },
             })
 
@@ -136,32 +133,6 @@ function renderMainProjectComponent() {
         )
     }
     return { getProjectCards, renderTaskDetails }
-} 
-
-function handleCheckedTask() {
-    sharedProjects.getAllProjects().forEach(
-        project => 
-            project.getAllTodos().forEach(task => {
-
-        const taskMainDiv = document.querySelector(
-            `#div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
-        )
-        project.removeTodo(task.id)
-        taskMainDiv.remove();
-        console.log(project);
-        renderMainProjectComponent().renderTaskDetails(task, project)
-    }))
 }
 
-function removeTaskOnCheck() {
-    sharedProjects.getAllProjects().forEach(
-        project => 
-            project.getAllTodos().forEach(task => {
-        const taskCheckbox = document.querySelector(
-            `#id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
-        )
-        taskCheckbox.addEventListener("change", handleCheckedTask)}))
-    }
-
-
-export { renderMainProjectComponent, removeTaskOnCheck }
+export { renderMainProjectComponent }

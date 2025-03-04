@@ -116,25 +116,11 @@ function createModal({ id, parent, formProps = {}, content=[], buttons = {} }) {
                 getFormData: () => Object.fromEntries(new FormData(form))
         })}
 })
-    
-    // const editForm = (mode) => {
-    //     if (mode === "edit" && !buttonsDiv.querySelector("#edit-delete-btn")) {
-    //         const deleteBtn = createHtmlEl({
-    //             tag: "img",
-    //             parent: buttonsDiv,
-    //             props: {
-    //                 id: "edit-delete-btn",
-    //                 src: deleteBtnSVG,
-    //                 className: "logo-svg-small"
-    //             }
-    //         })
-    //     }}
 
     return {
         open: () => dialog.showModal(),
         close: () => dialog.close(),
         getFormData: () => Object.fromEntries(new FormData(form)),
-        // editForm
     }
 }
 

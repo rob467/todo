@@ -2,7 +2,7 @@ import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
 import createModal from "./ModalComponent.js";
 import { projectList, sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
-import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
+import { renderMainProjectComponent } from "./MainProjectViewComponent.js"
 import { renderProjectComponent } from "./ProjectsComponent.js"
 
 
@@ -67,7 +67,6 @@ const addTaskModal = createModal({
     buttons: {
         Save: (modal) => {
             const data = modal.getFormData();
-            console.log(data.project)
             if (modal.form.checkValidity()) {
                 sharedProjects.getProjectById(parseInt(data.project)).addTodo(
                     data["task-title"],
@@ -75,13 +74,11 @@ const addTaskModal = createModal({
                     data["priority"],
                     data["task-description"]
                 )
-                console.log(sharedProjects.getProjectById(parseInt(data.project)))
                 modal.dialog.close();
                 modal.form.reset();
                 document.querySelector("#task-date").valueAsDate = new Date()
                 renderMainProjectComponent().getProjectCards();
                 renderProjectComponent().renderProjectsList();
-                removeTaskOnCheck();
                 } else {modal.form.reportValidity()}
             },
         Cancel: (modal) => {

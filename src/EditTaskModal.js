@@ -2,7 +2,7 @@ import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
 import createModal from "./ModalComponent.js";
 import { projectList, sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
-import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
+import { renderMainProjectComponent } from "./MainProjectViewComponent.js"
 import { renderProjectComponent } from "./ProjectsComponent.js"
 import deleteBtnSVG from "./svgs/trash-solid.svg"
 
@@ -75,33 +75,48 @@ const editTaskModal = createModal({
     buttons: {
         Save: (modal) => {
             const data = modal.getFormData();
+            data.project = parseInt(data.project);
+            data["task-id"] = parseInt(data["task-id"]);
+            let currentProject = sharedProjects.getProjectByChildTask(
+                parseInt(data["task-id"])
+            );
+            let currentTask = currentProject.getTodo(data["task-id"]);
+            const projectChanged = data.project !== currentProject["id"];
+
             if (modal.form.checkValidity()) {
-                let currentTask = sharedProjects.getProjectById(parseInt(data.project)).getTodo(
-                    parseInt(data["task-id"])
-                )
+                if (projectChanged) {
+                    currentProject.removeTodoByIndex(
+                        currentProject.getAllTodos().indexOf(currentTask));
+                    let newProject = sharedProjects.getProjectById(data.project);
+                    newProject.getAllTodos().push(currentTask);
+                }
+
                 currentTask.editTodo(
                     data["edit-title"],
                     data["edit-date"],
                     data["edit-priority"],
                     data["edit-description"]
                 )
+
                 modal.dialog.close();
                 modal.form.reset();
+
                 document.querySelector("#edit-date").valueAsDate = new Date()
+
                 renderMainProjectComponent().getProjectCards();
                 renderProjectComponent().renderProjectsList();
-                removeTaskOnCheck();
-                } else {modal.form.reportValidity()}
+            } else {modal.form.reportValidity()}
             },
+
         Cancel: (modal) => {
             modal.dialog.close();
         },
+
         delete: (modal) => {
             const data = modal.getFormData();
             sharedProjects.getProjectById(parseInt(data.project)).removeTodo(
                 parseInt(data["task-id"])
             )
-            console.log(sharedProjects.getProjectById(parseInt(data.project)))
             renderMainProjectComponent().getProjectCards();
             renderProjectComponent().renderProjectsList();
             modal.dialog.close();
@@ -109,11 +124,5 @@ const editTaskModal = createModal({
         }
     }
 })
-
-// const deleteBtn = document.querySelector("#edit-delete-btn")
-//     deleteBtn.addEventListener("click", () => {
-//         console.log("blah")
-//         editTaskModal.close()
-//     })
 
 export { editTaskModal }

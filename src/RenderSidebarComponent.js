@@ -1,9 +1,7 @@
 import taskComponent from "./AddTaskComponent.js"
 import renderCalendarList from "./CalendarComponent.js"
-// import { renderProjectSidebarHeading } from "./ProjectsComponent.js"
 import { createHtmlEl } from "./AddDOMComponents.js"
-import { removeTaskOnCheck } from "./MainProjectViewComponent.js"
-import { projectModal, updateAddTaskForm } from "./ProjectsComponent.js"
+import { projectModal } from "./ProjectsComponent.js"
 import { addTaskModal } from "./todo-form.js"
 
 
@@ -57,7 +55,6 @@ function getInitialSidebarElements() {
 function renderSidebar() {
     createInitialSidebarElements()
     taskComponent();
-    removeTaskOnCheck();
 }
 
 export { renderSidebar, getInitialSidebarElements }

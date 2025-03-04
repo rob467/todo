@@ -1,6 +1,6 @@
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
 import { Project, projectList, sharedProjectsFactory } from "./todoItems.js"
-import { renderMainProjectComponent, removeTaskOnCheck } from "./MainProjectViewComponent.js"
+import { renderMainProjectComponent } from "./MainProjectViewComponent.js"
 import createModal from "./ModalComponent.js"
 
 const sharedProjects = sharedProjectsFactory()
@@ -41,7 +41,6 @@ const projectModal = createModal({
                 updateAddTaskForm("#edit-project-select");
                 renderMainProjectComponent().getProjectCards();
                 renderProjectComponent().renderProjectsList();
-                removeTaskOnCheck();
             }
             projectTitle.reportValidity()
         },
@@ -56,12 +55,10 @@ const projectModal = createModal({
 // Updates add task form to include new project options
 function updateAddTaskForm(formId) {
     const selectProject = document.querySelector(formId)
-    console.log(selectProject)
     while (selectProject.firstChild) {
         selectProject.removeChild(selectProject.firstChild)
     }
     sharedProjects.getAllProjects().toReversed().forEach(project => {
-        console.log(project)
         createHtmlEl({
         tag: "option", parent: selectProject,
         props: {value: project.id},
