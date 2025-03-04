@@ -98,8 +98,14 @@ ul {
 .btns-div {
     display: flex;
     justify-content: space-evenly;
+    align-items: center;
 }
 
 .priorities-div {
     display: flex;
+}
+
+.radio-group {
+    display: flex;
+    gap: 5px;
 }

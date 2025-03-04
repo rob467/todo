@@ -34,7 +34,8 @@ function createHtmlLabelInput({
     required = false,
     value="",
     wrapperTag = "div",
-    wrapperProps = {}
+    wrapperProps = {},
+    dateDefault = null,
 } = {}) {
 
     const input = createHtmlEl({
@@ -44,6 +45,9 @@ function createHtmlLabelInput({
 
     if (value) input.setAttribute("value", value);
     if (required) input.setAttribute("required", true);
+    if (inputType === "date" && dateDefault) {
+        input.valueAsDate = dateDefault
+    }
 
     const label = createHtmlEl({
         tag: "label",

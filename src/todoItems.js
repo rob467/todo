@@ -1,5 +1,8 @@
 class TodoItem {
+    static taskId = 0;
     constructor(title, dueDate, priority, description="") {
+        TodoItem.taskId++;
+        this.id = TodoItem.taskId;
         if (!title) throw new Error("Title is required");
         if (priority && !["low", "medium", "high"].includes(priority.toLowerCase())) {
             throw new Error("Priority must be 'low', 'medium' or 'high'")
@@ -9,10 +12,20 @@ class TodoItem {
         this.priority = priority;
         this.description = description;
     }
+
+    editTodo(title, dueDate, priority, description) {
+        this.title = title,
+        this.dueDate = new Date(dueDate),
+        this.priority = priority,
+        this.description = description
+    }
 }
 
 class Project {
+    static projectId = 0;
     constructor(name) {
+        Project.projectId++;
+        this.id = Project.projectId;
         this.name = name;
         this.todoList = [];
     }
@@ -22,15 +35,15 @@ class Project {
         this.todoList.push(todoItem)
     }
 
-    removeTodo(title) {
-        this.todoList = this.todoList.filter(todo => todo.title !== title)
+    removeTodo(id) {
+        this.todoList = this.todoList.filter(todo => todo.id !== id)
         // if (index >= 0 && index < this.todoList.length) {
         //   this.todoList.splice(index, 1);
         // }
       }
 
-    getTodo(title) {
-        return this.todoList.find(todo => todo.title === title)
+    getTodo(id) {
+        return this.todoList.find(todo => todo.id === id)
     }
 
     getAllTodos() {
@@ -56,6 +69,10 @@ const sharedProjectsFactory = (() => {
 
             getProject(name) {
                 return this.projects.find(project => project.name === name)
+            },
+
+            getProjectById(id) {
+                return this.projects.find(project => project.id === id)
             },
 
             getAllProjects() {

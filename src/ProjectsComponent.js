@@ -6,7 +6,7 @@ import createModal from "./ModalComponent.js"
 const sharedProjects = sharedProjectsFactory()
 
 const projectModal = createModal({
-    id: "project-test-dialog",
+    id: "project-dialog",
     parent: document.querySelector(".main"),
     content: [{
                 type: "input",
@@ -15,7 +15,8 @@ const projectModal = createModal({
                 inputProps: {
                     id: "project-title",
                     name: "project-title"},
-                required: true}],
+                required: true
+            }],
     buttons: {
         Save: (modal) => {
             const data = modal.getFormData();
@@ -32,32 +33,40 @@ const projectModal = createModal({
             } else {
                 projectTitle.setCustomValidity("")
                 sharedProjects.addProject(data["project-title"])
-
                 modal.dialog.close();
                 modal.form.reset();
 
                 // Rendering & updating task form to include new projects
-                updateAddTaskForm();
+                updateAddTaskForm("#project-select");
+                updateAddTaskForm("#edit-project-select");
                 renderMainProjectComponent().getProjectCards();
                 renderProjectComponent().renderProjectsList();
                 removeTaskOnCheck();
             }
             projectTitle.reportValidity()
-        }
+        },
+        Cancel: (modal) => {
+                modal.dialog.close();
+                modal.form.reset();
+            },
+
     }
 })
 
 // Updates add task form to include new project options
-function updateAddTaskForm() {
-    const selectProject = document.querySelector("#project-select")
+function updateAddTaskForm(formId) {
+    const selectProject = document.querySelector(formId)
+    console.log(selectProject)
     while (selectProject.firstChild) {
         selectProject.removeChild(selectProject.firstChild)
     }
-    sharedProjects.getAllProjects().toReversed().forEach(project => createHtmlEl({
+    sharedProjects.getAllProjects().toReversed().forEach(project => {
+        console.log(project)
+        createHtmlEl({
         tag: "option", parent: selectProject,
-        props: {value: project.name},
+        props: {value: project.id},
         textContent: project.name
-    }))
+    })})
 }
 
 function renderProjectComponent(){
@@ -98,4 +107,4 @@ function renderProjectComponent(){
     return { renderProjectsList, renderTaskList}
 }
 
-export { renderProjectComponent, projectModal }
+export { renderProjectComponent, projectModal, updateAddTaskForm }

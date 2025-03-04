@@ -3,18 +3,23 @@ import renderCalendarList from "./CalendarComponent.js"
 // import { renderProjectSidebarHeading } from "./ProjectsComponent.js"
 import { createHtmlEl } from "./AddDOMComponents.js"
 import { removeTaskOnCheck } from "./MainProjectViewComponent.js"
-import { projectModal } from "./ProjectsComponent.js"
+import { projectModal, updateAddTaskForm } from "./ProjectsComponent.js"
+import { addTaskModal } from "./todo-form.js"
 
 
 function createInitialSidebarElements() {
     const sidebarDiv = document.querySelector(".sidebar")
 
-    createHtmlEl({
+    const addTaskBtn = createHtmlEl({
             tag: "button",
             parent: sidebarDiv,
             props: {id: "add-task-btn"},
             textContent: "Add Task"
         })
+
+    addTaskBtn.onclick = () => {
+        addTaskModal.open()
+    };
 
     renderCalendarList();  
     

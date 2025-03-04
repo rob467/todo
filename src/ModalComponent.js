@@ -1,27 +1,83 @@
 import { createHtmlEl, createHtmlLabelInput } from "./AddDOMComponents.js"
+import deleteBtnSVG from "./svgs/trash-solid.svg"
 
-function createModal({ id, parent, content=[], buttons = {} }) {
+function createModal({ id, parent, formProps = {}, content=[], buttons = {} }) {
     const dialog = createHtmlEl({
         tag: "dialog",
         parent: parent,
-        props: {id: id}
+        props: {id: id, className: "form-dialog"}
     })
 
-    const form = createHtmlEl({tag: "form", parent: dialog})
+    const form = createHtmlEl({
+        tag: "form",
+        parent: dialog,
+        props: {...formProps}
+    })
+
     form.method = "dialog";
 
     content.forEach((item) => {
         if (item.type === "input") {
-            createHtmlLabelInput({
+            const inputEl = createHtmlLabelInput({
                 parent: form,
+                inputType: item.inputType,
                 inputProps: item.inputProps,
-                labelProps: item.labelText,
                 labelText: item.labelText,
+                dateDefault: item.dateDefault,
                 reverseOrder: item.reverseOrder || false,
                 required: item.required || false,
                 wrapperProps: item.wrapperProps || {},
             })
-        } else {
+        } else if (item.type === "radio-group") {
+            const radioDiv = createHtmlEl({
+                parent: form,
+                props: {className: item.wrapperClass || "radio-group"}
+            });
+
+            item.options.forEach((option) => {
+                createHtmlLabelInput({
+                    parent: radioDiv,
+                    inputType: "radio",
+                    inputProps: {
+                        id: `${item.name}-${option.value}`, 
+                        value: option.value,
+                        name: item.name,},
+                    labelText: option.label,
+                    required: item.required || false,
+                    reverseOrder: item.reverseOrder || false
+                })
+            })
+        } else if (item.type === "select") {
+            const selectGroup = createHtmlEl({
+                tag: "select",
+                parent: createHtmlEl({parent:form}),
+                props: item.props,
+            })
+        
+            item.options.forEach((option) => {
+                createHtmlEl({
+                    tag: "option",
+                    parent: selectGroup,
+                    textContent: option.label,
+                    props: {value: option.value}
+                })
+            })
+        } else if (item.type === "textarea") {
+            const descriptionDiv = createHtmlEl({parent: form})
+            const descriptionLabel = createHtmlEl({
+                tag: "label",
+                parent: descriptionDiv,
+                textContent: "Description: "
+            })
+            createHtmlEl({
+                tag: "textarea",
+                parent: descriptionDiv,
+                props: item.props
+            })
+
+            descriptionLabel.htmlFor = item.props.id
+        }
+        else {
             createHtmlEl({
                 tag: item.tag,
                 parent: form,
@@ -30,37 +86,55 @@ function createModal({ id, parent, content=[], buttons = {} }) {
             })
         }
     })
+    const buttonsDiv = createHtmlEl({parent: form, props: {className: "btns-div"}})
 
     Object.entries(buttons).forEach(([label, callback]) => {
-        createHtmlEl({
+        let button = ""
+        if (label === "delete") {
+            button = createHtmlEl({
+            tag: "img",
+            parent: buttonsDiv,
+            props: { id: "delete-btn", src: deleteBtnSVG, className: "logo-svg-small" },
+        })
+
+        } else {
+            button = createHtmlEl({
             tag: "button",
-            parent: form,
+            parent: buttonsDiv,
             textContent: label,
             props: { type: "button" },
-            children: [],
-            appendOrder: "normal"
-        }).onclick = (e) => {
+        })
+        }
+        
+        button.onclick = (e) => {
             e.preventDefault();
             callback?.({
                 dialog,
                 form,
                 open,
                 close,
-                getFormData: () => Object.fromEntries(new FormData(form))})
-        }
-    })
-
-    createHtmlEl({
-        tag: "button",
-        parent: form,
-        textContent: "Cancel",
-        props: {type: "button"}
-    }).onclick = () => dialog.close()
+                getFormData: () => Object.fromEntries(new FormData(form))
+        })}
+})
+    
+    // const editForm = (mode) => {
+    //     if (mode === "edit" && !buttonsDiv.querySelector("#edit-delete-btn")) {
+    //         const deleteBtn = createHtmlEl({
+    //             tag: "img",
+    //             parent: buttonsDiv,
+    //             props: {
+    //                 id: "edit-delete-btn",
+    //                 src: deleteBtnSVG,
+    //                 className: "logo-svg-small"
+    //             }
+    //         })
+    //     }}
 
     return {
         open: () => dialog.showModal(),
         close: () => dialog.close(),
-        getFormData: () => Object.fromEntries(new FormData(form))
+        getFormData: () => Object.fromEntries(new FormData(form)),
+        // editForm
     }
 }
 

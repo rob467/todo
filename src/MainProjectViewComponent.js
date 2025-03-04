@@ -2,12 +2,12 @@
 import { sharedProjectsFactory } from "./todoItems.js"
 import { format, isToday, isTomorrow } from "date-fns";
 import { createHtmlEl, createHtmlLabelInput, removeAllChildren } from "./AddDOMComponents.js"
-import { createSingleTaskDialog } from "./SingleTaskDialogComponent.js"
+import { editTaskModal } from "./EditTaskModal.js"
 
 import maxBtn from "./svgs/maximize-solid.svg"
 
 const sharedProjects = sharedProjectsFactory();
-const taskDialog = createSingleTaskDialog();
+
 
 function renderMainProjectComponent() {
     const mainDiv = document.querySelector(".main");
@@ -49,7 +49,9 @@ function renderMainProjectComponent() {
         createHtmlLabelInput({
             parent: taskDiv,
             createDiv: true,
-            id: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`,
+            inputProps: {
+                id: `id-${task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
+            },
             inputType: "checkbox",
             reverseInputOrder: true,
         })
@@ -72,67 +74,26 @@ function renderMainProjectComponent() {
             textContent: formatCloseDates(task.dueDate)
         })
 
-        taskTextDiv.addEventListener("click", () => {
+        taskTextDiv.onclick = () => {
+            // editTaskModal.editForm("edit")
             document.querySelector("#edit-title").value = task.title
-            document.querySelector("#edit-due-date").valueAsDate = new Date(task.dueDate.toString());
-            document.querySelector("#edit-task-description").value = task.description
-            
-            let priorityEl = document.querySelector(`#edit-${task.priority}`)
-            if (priorityEl.value === task.priority) {
-                priorityEl.setAttribute("checked", true);
-            }
-
-            taskDialog.getFormDialog().showModal();
-
-            const submitBtn = document.querySelector("#edit-submit-btn")
-
-            submitBtn.addEventListener("click", (e) => {
-                    e.preventDefault();
+            document.querySelector("#edit-date").valueAsDate = task.dueDate
+            document.querySelector("#task-id").value = task.id
+            document.querySelector(
+                `#edit-priority-${task.priority}`).setAttribute("checked", true)
+            console.log(editTaskModal.getFormData())
+            editTaskModal.open()
+        
+            // deleteBtn.addEventListener("click", () => {
+            //         sharedProjects.getProject(project.name).removeTodo(task.title)
+            //         taskDiv.remove()
     
-                    task.title = document.querySelector(
-                        "#edit-title").value
-                    task.dueDate = document.querySelector(
-                        "#edit-due-date").value
-                    task.priority = document.querySelector(
-                        "input[name='edit-priority']:checked").value
-                    task.description = document.querySelector(
-                        "#edit-task-description").value
-    
-                    taskDiv.setAttribute("id", `div-${
-                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')}`
-                    )
-    
-                    titleHeading.textContent = task.title
-                    titleHeading.setAttribute("id", `#heading-${
-                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
-                        }`)
-    
-                    dateHeading.textContent = formatCloseDates(task.dueDate)
-                    dateHeading.setAttribute("id", `#heading-date-${
-                        task.title.replace(/[^a-zA-Z0-9-_]/g, '-')
-                        }`)
-                    console.log(sharedProjects.getProject(project.name))
-    
-                    renderProjectComponent().renderTaskList(project)
-    
-                    taskDialog.getFormDialog().close()
-                }
-            )
-
-            const deleteBtn = document.querySelector("#delete-task-btn")
-            deleteBtn.addEventListener("click", () => {
-                    sharedProjects.getProject(project.name).removeTodo(task.title)
-                    renderProjectComponent().renderTaskList(project)
-                    taskDiv.remove()
-    
-                    taskDialog.getFormDialog().close()
-                }
-            )
-        })
-
-        document.querySelector("#edit-cancel-btn").addEventListener(
-            "click", () => {taskDialog.getFormDialog().close();})
+            //         taskDialog.getFormDialog().close()
+            //     }
+            // )
+        };
     }
+
 
     function getProjectCards() {
         while (mainProjectsDiv.firstChild) {
@@ -174,7 +135,7 @@ function renderMainProjectComponent() {
             project => createProjectCard(project)
         )
     }
-    return { getProjectCards }
+    return { getProjectCards, renderTaskDetails }
 } 
 
 function handleCheckedTask() {
@@ -185,9 +146,10 @@ function handleCheckedTask() {
         const taskMainDiv = document.querySelector(
             `#div-${task.title.replace(/[^a-zA-Z0-9-_]/g, '_')}`
         )
-        project.removeTodo(task.title)
-        taskMainDiv.remove()
-        renderProjectComponent().renderTaskList(project)
+        project.removeTodo(task.id)
+        taskMainDiv.remove();
+        console.log(project);
+        renderMainProjectComponent().renderTaskDetails(task, project)
     }))
 }
 
@@ -202,4 +164,4 @@ function removeTaskOnCheck() {
     }
 
 
-export {renderMainProjectComponent, removeTaskOnCheck}
+export { renderMainProjectComponent, removeTaskOnCheck }
