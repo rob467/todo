@@ -1,3 +1,3 @@
 # todo
 
-A Todo Webapp
+A Todo Webapp with the ability to add projects and tasks, and store them locally.
