@@ -1,99 +1,107 @@
-class TodoItem {
-    static taskId = 0;
-    constructor(title, dueDate, priority, description="") {
-        TodoItem.taskId++;
-        this.id = TodoItem.taskId;
-        if (!title) throw new Error("Title is required");
-        if (priority && !["low", "medium", "high"].includes(priority.toLowerCase())) {
-            throw new Error("Priority must be 'low', 'medium' or 'high'")
-        }
-        this.title = title;
-        this.dueDate = new Date(dueDate);
-        this.priority = priority;
-        this.description = description;
-    }
+import loadLocalStorage from './LoadLocalStorage.js';
 
-    editTodo(title, dueDate, priority, description) {
-        this.title = title,
-        this.dueDate = new Date(dueDate),
-        this.priority = priority,
-        this.description = description
+class TodoItem {
+  static taskId = 0;
+  constructor(title, dueDate, priority, description = '') {
+    TodoItem.taskId++;
+    this.id = TodoItem.taskId;
+    if (!title) throw new Error('Title is required');
+    if (
+      priority &&
+      !['low', 'medium', 'high'].includes(priority.toLowerCase())
+    ) {
+      throw new Error("Priority must be 'low', 'medium' or 'high'");
     }
+    this.title = title;
+    this.dueDate = new Date(dueDate);
+    this.priority = priority;
+    this.description = description;
+  }
+
+  editTodo(title, dueDate, priority, description) {
+    (this.title = title),
+      (this.dueDate = new Date(dueDate)),
+      (this.priority = priority),
+      (this.description = description);
+  }
 }
 
 class Project {
-    static projectId = 0;
-    constructor(name) {
-        Project.projectId++;
-        this.id = Project.projectId;
-        this.name = name;
-        this.todoList = [];
-    }
-    
-    addTodo(title, dueDate, priority, description="") {
-        let todoItem = new TodoItem(title, dueDate, priority, description)
-        this.todoList.push(todoItem)
-    }
+  static projectId = 0;
+  constructor(name) {
+    Project.projectId++;
+    this.id = Project.projectId;
+    this.name = name;
+    this.todoList = [];
+  }
 
-    removeTodo(id) {
-        this.todoList = this.todoList.filter(todo => todo.id !== id)
-      }
+  addTodo(title, dueDate, priority, description = '') {
+    let todoItem = new TodoItem(title, dueDate, priority, description);
+    this.todoList.push(todoItem);
+  }
 
-    removeTodoByIndex(index) {
-        if (index >= 0 && index < this.todoList.length) {
-          this.todoList.splice(index, 1);
-        }
-    }
+  removeTodo(id) {
+    this.todoList = this.todoList.filter((todo) => todo.id !== id);
+  }
 
-    getTodo(id) {
-        return this.todoList.find(todo => todo.id === id)
+  removeTodoByIndex(index) {
+    if (index >= 0 && index < this.todoList.length) {
+      this.todoList.splice(index, 1);
     }
+  }
 
-    getAllTodos() {
-        return this.todoList;
-    }
+  getTodo(id) {
+    return this.todoList.find((todo) => todo.id === id);
+  }
+
+  getAllTodos() {
+    return this.todoList;
+  }
 }
 
 const sharedProjectsFactory = (() => {
-    let instance = null;
-    return () => {
+  let instance = null;
+  return () => {
     if (!instance) {
-        instance = {
-            projects: [new Project("Other")],
+      let projectsValue;
+      if (loadLocalStorage()) {
+        projectsValue = loadLocalStorage();
+      } else {
+        projectsValue = [new Project('Other')];
+      }
+      instance = {
+        projects: projectsValue,
 
-            addProject(title) {
-                const newProject = new Project(title);
-                this.projects.push(newProject);
-            },
+        addProject(title) {
+          const newProject = new Project(title);
+          this.projects.push(newProject);
+        },
 
-            removeProject(name) {
-                this.projects = this.projects.filter(project => project.name !== name)
-            },
+        removeProject(name) {
+          this.projects = this.projects.filter(
+            (project) => project.name !== name
+          );
+        },
 
-            getProject(name) {
-                return this.projects.find(project => project.name === name)
-            },
+        getProject(name) {
+          return this.projects.find((project) => project.name === name);
+        },
 
-            getProjectById(id) {
-                return this.projects.find(project => project.id === id)
-            },
+        getProjectById(id) {
+          return this.projects.find((project) => project.id === id);
+        },
 
-            getAllProjects() {
-                return this.projects;
-            },
+        getAllProjects() {
+          return this.projects;
+        },
 
-            getProjectByChildTask(taskId) {
-                return this.projects.find(project => project.getTodo(taskId))
-            }
-        }
+        getProjectByChildTask(taskId) {
+          return this.projects.find((project) => project.getTodo(taskId));
+        },
+      };
     }
-    return instance
-    }
-})()
+    return instance;
+  };
+})();
 
-function projectList() {
-    const getProjectList = () => projectList;
-    return { getProjectList }
-}
-
-export { Project, projectList, sharedProjectsFactory }
+export { Project, sharedProjectsFactory };

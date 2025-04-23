@@ -1,6 +1,10 @@
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.js");
+import { merge } from "webpack-merge";
+import commonConfig from "./webpack.common.js";
 
-MediaSourceHandle.exports = merge(common, {
-    mode: "production",
-})
+export default {
+    ...commonConfig,
+    mode: 'production',
+    optimization: {
+      minimize: true,
+    },
+}
