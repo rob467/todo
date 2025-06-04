@@ -2,8 +2,8 @@ import createModal from './ModalComponent.js';
 import { renderProjectComponent } from './ProjectsComponent.js';
 import { renderMainProjectComponent } from './MainProjectViewComponent.js';
 import { getInitialSidebarElements } from './RenderSidebarComponent.js';
-import { sharedProjectsFactory } from './todoItems.js';
-import populateLocalStorage from './LocalStorage.js';
+import { sharedProjectsFactory } from './CreateProjects.js';
+import populateLocalStorage from './LoadLocalStorage.js';
 
 const sharedProjects = sharedProjectsFactory();
 

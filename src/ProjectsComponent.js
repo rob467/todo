@@ -1,8 +1,8 @@
 import { createHtmlEl, removeAllChildren } from './AddDOMComponents.js';
-import { sharedProjectsFactory } from './todoItems.js';
+import { sharedProjectsFactory } from './CreateProjects.js';
 import { renderMainProjectComponent } from './MainProjectViewComponent.js';
 import createModal from './ModalComponent.js';
-import populateLocalStorage from './LocalStorage.js';
+import populateLocalStorage from './LoadLocalStorage.js';
 
 const sharedProjects = sharedProjectsFactory();
 

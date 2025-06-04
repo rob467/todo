@@ -1,10 +1,11 @@
 import createModal from './ModalComponent.js';
-import { sharedProjectsFactory } from './todoItems.js';
+import { sharedProjectsFactory } from './CreateProjects.js';
 import { renderMainProjectComponent } from './MainProjectViewComponent.js';
 import { renderProjectComponent } from './ProjectsComponent.js';
-import populateLocalStorage from './LocalStorage.js';
+import populateLocalStorage from './LoadLocalStorage.js';
 
 const sharedProjects = sharedProjectsFactory();
+console.log(sharedProjects.getAllProjects());
 
 const editTaskModal = createModal({
   id: 'edit-task-dialog',
@@ -86,6 +87,7 @@ const editTaskModal = createModal({
       const projectChanged = data.project !== currentProject['id'];
 
       if (modal.form.checkValidity()) {
+        console.log(sharedProjects.getAllProjects());
         if (projectChanged) {
           currentProject.removeTodoByIndex(
             currentProject.getAllTodos().indexOf(currentTask)
@@ -93,13 +95,13 @@ const editTaskModal = createModal({
           let newProject = sharedProjects.getProjectById(data.project);
           newProject.getAllTodos().push(currentTask);
         }
-
         currentTask.editTodo(
           data['edit-title'],
           data['edit-date'],
           data['edit-priority'],
           data['edit-description']
         );
+        console.log(sharedProjects.getAllProjects());
 
         modal.dialog.close();
         modal.form.reset();

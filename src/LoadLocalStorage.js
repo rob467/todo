@@ -1,20 +1,10 @@
-import { Project } from './todoItems.js';
+import { sharedProjectsFactory } from './CreateProjects.js';
+import { serialize } from './LocalStorage.js';
 
-function loadLocalStorage() {
-  if (localStorage.length) {
-    let projects = JSON.parse(localStorage.getItem('projects')).map((project) =>
-      Object.assign(new Project(), project)
-    );
-    if (projects.some((project) => project.getAllTodos().length > 0)) {
-      projects = projects.map((project) => {
-        project
-          .getAllTodos()
-          .forEach((task) => (task.dueDate = new Date(task.dueDate)));
-        return project;
-      });
-    }
-    return projects;
-  }
+const sharedProjects = sharedProjectsFactory();
+
+function populateLocalStorage() {
+  localStorage.setItem('projects', serialize(sharedProjects));
 }
 
-export default loadLocalStorage;
+export default populateLocalStorage;

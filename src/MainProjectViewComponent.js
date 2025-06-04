@@ -1,14 +1,14 @@
-import { sharedProjectsFactory } from './todoItems.js';
+import { sharedProjectsFactory } from './CreateProjects.js';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { createHtmlEl, createHtmlLabelInput } from './AddDOMComponents.js';
 import { renderProjectComponent } from './ProjectsComponent.js';
 import { editTaskModal } from './EditTaskModal.js';
-import populateLocalStorage from './LocalStorage.js';
+import populateLocalStorage from './LoadLocalStorage.js';
 
 import maxBtn from './svgs/maximize-solid.svg';
 
 const sharedProjects = sharedProjectsFactory();
-console.log(sharedProjects)
+console.log(sharedProjects.projects);
 
 function renderMainProjectComponent() {
   const mainDiv = document.querySelector('.main');
@@ -96,6 +96,7 @@ function renderMainProjectComponent() {
       document
         .querySelector(`#edit-priority-${task.priority}`)
         .setAttribute('checked', true);
+      document.querySelector('#edit-description').value = task.description;
       editTaskModal.open();
     };
   }
