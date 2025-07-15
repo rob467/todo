@@ -1,9 +1,10 @@
 import { sharedProjectsFactory } from './CreateProjects.js';
-import { format, isToday, isTomorrow } from 'date-fns';
 import { createHtmlEl, createHtmlLabelInput } from './AddDOMComponents.js';
 import { renderProjectComponent } from './ProjectsComponent.js';
 import TaskModal from './TaskModal.js';
 import populateLocalStorage from './LoadLocalStorage.js';
+import { openExpandedProjectModal } from './ExpandedProjectView.js';
+import { formatCloseDates } from './DateUtils.js';
 
 import maxBtn from './svgs/maximize-solid.svg';
 
@@ -140,18 +141,8 @@ function renderMainProjectComponent() {
   } else {
     mainProjectsDiv = document.querySelector('.main-projects-container');
     mainProjectsDiv;
-  }
+  };
 
-  // Calculates if date is today, tomorrow or further in future and returns as string
-  function formatCloseDates(date) {
-    if (isToday(date)) {
-      return 'Today';
-    } else if (isTomorrow(date)) {
-      return 'Tomorrow';
-    } else {
-      return format(date, 'dd-MMM-yyyy');
-    }
-  }
 
   function renderTaskDetails(task, project) {
     const projectDiv = document.querySelector(`#card-${project.id}`);
@@ -243,12 +234,14 @@ function renderMainProjectComponent() {
         textContent: project.name,
       });
 
-      createHtmlEl({
+      const expandProjectBtn = createHtmlEl({
         tag: 'img',
         parent: projectCardHeadingDiv,
         props: { src: maxBtn, className: 'logo-svg' },
       });
-
+      expandProjectBtn.onclick = () => {
+        openExpandedProjectModal(project.id);
+      };
       let sortedByDateProjects = project
         .getAllTodos()
         .sort((a, b) => a.dueDate - b.dueDate);

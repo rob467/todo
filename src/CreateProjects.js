@@ -55,6 +55,13 @@ const sharedProjectsFactory = (() => {
           this.projects.push(newProject);
         },
 
+        editProject(oldName, newName) {
+          const project = this.getProject(oldName);
+          if (project) {
+            project.name = newName;
+          }
+        },
+
         removeProject(name) {
           this.projects = this.projects.filter(
             (project) => project.name !== name

@@ -130,11 +130,44 @@ function createModal({
     };
   });
 
+  function setContent(newContent) {
+    while (form.firstChild && !form.firstChild.classList.contains('btns-div')) {
+      form.removeChild(form.firstChild);
+    }
+    const buttonsDiv = form.querySelector('.btns-div');
+    newContent.forEach((item) => {
+      let newElement;
+      if (item.type === 'input') {
+        newElement = createHtmlLabelInput({
+          parent: null,
+          inputType: item.inputType,
+          inputProps: item.inputProps,
+          labelText: item.labelText,
+          dateDefault: item.dateDefault,
+          reverseOrder: item.reverseOrder || false,
+          required: item.required || false,
+          wrapperProps: item.wrapperProps || {},
+        });
+      } else if (item.type === 'custom' && typeof item.render === 'function') {
+        newElement = item.render();
+      } else {
+        newElement = createHtmlEl({
+          tag: item.tag,
+          parent: form,
+          textContent: item.textContent || '',
+          props: item.props || {},
+        });
+      }
+      form.insertBefore(newElement, buttonsDiv);
+    });
+  }
+
   return {
     open: () => dialog.showModal(),
     close: () => dialog.close(),
     getFormData: () => Object.fromEntries(new FormData(form)),
     form,
+    setContent,
   };
 }
 
