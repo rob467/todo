@@ -95,7 +95,12 @@ ul {
 .task-text-div {
   display: flex;
   justify-content: space-between;
+  align-items: start;
   width: 85%;
+}
+
+.main-task-text-title {
+  width: 60%;
 }
 
 .btns-div {

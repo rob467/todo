@@ -134,6 +134,7 @@ function createModal({
     open: () => dialog.showModal(),
     close: () => dialog.close(),
     getFormData: () => Object.fromEntries(new FormData(form)),
+    form,
   };
 }
 

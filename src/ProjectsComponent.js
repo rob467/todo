@@ -29,11 +29,18 @@ const projectModal = createModal({
         .getAllProjects()
         .some((project) => project.name === data['project-title']);
 
-      if (data['project-title'] === '') {
+      if (data['project-title'].trim() === '') {
         projectTitle.setCustomValidity('Project title required!');
       } else if (projExists) {
         projectTitle.setCustomValidity(
           `${data['project-title']} already exists!`
+        );
+      } else if (
+        data['project-title'].length > 19 ||
+        data['project-title'].length < 3
+      ) {
+        projectTitle.setCustomValidity(
+          'Project title must be between 3 and 20 characters!'
         );
       } else {
         projectTitle.setCustomValidity('');

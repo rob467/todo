@@ -1,7 +1,93 @@
 import renderCalendarList from './CalendarComponent.js';
 import { createHtmlEl } from './AddDOMComponents.js';
 import { projectModal } from './ProjectsComponent.js';
-import { addTaskModal, taskComponent } from './AddTaskComponent.js';
+import { taskComponent } from './AddTaskComponent.js';
+import TaskModal from './TaskModal.js';
+import { renderMainProjectComponent } from './MainProjectViewComponent.js';
+import { renderProjectComponent } from './ProjectsComponent.js';
+import { sharedProjectsFactory } from './CreateProjects.js';
+import populateLocalStorage from './LoadLocalStorage.js';
+const sharedProjects = sharedProjectsFactory();
+
+const addTaskModal = TaskModal({
+  mode: 'add',
+  onSave: (data, modal) => {
+    const prefix = 'add-';
+
+    // Get form elements
+    const taskTitle = modal.form.querySelector(`#${prefix}task-title`);
+    const taskDate = modal.form.querySelector(`#${prefix}task-date`);
+    const projectSelect = modal.form.querySelector(`#${prefix}project-select`);
+    const radios = modal.form.querySelectorAll(
+      `input[name="${prefix}priority"]`
+    );
+
+    console.log(data);
+    // Reset custom validity messages
+    taskTitle.addEventListener('input', () => {
+      taskTitle.setCustomValidity('');
+    });
+    taskDate.addEventListener('input', () => {
+      taskDate.setCustomValidity('');
+    });
+    radios.forEach((radio) => {
+      radio.addEventListener('input', () => {
+        radio.setCustomValidity('');
+      });
+    });
+    projectSelect.addEventListener('input', () => {
+      projectSelect.setCustomValidity('');
+    });
+
+    if (data['task-title'].trim() === '') {
+      taskTitle.setCustomValidity('Task title required!');
+      console.log('Task title is empty');
+      taskTitle.reportValidity();
+    } else if (data['task-date'].trim() === '') {
+      taskDate.setCustomValidity('Task date required!');
+    } else if (!data[`${prefix}priority`]) {
+      radios.forEach((radio) => {
+        radio.setCustomValidity('Task priority required!');
+      });
+      radios[0].reportValidity();
+      return;
+    } else if (projectSelect.value === '') {
+      projectSelect.setCustomValidity('Project selection required!');
+    } else {
+      sharedProjects
+        .getProjectById(parseInt(data.project))
+        .addTodo(
+          data['task-title'],
+          data['task-date'],
+          data[`${prefix}priority`],
+          data['task-description']
+        );
+      modal.dialog.close();
+      modal.form.reset();
+      document.querySelector(`#${prefix}task-date`).valueAsDate = new Date();
+
+      renderMainProjectComponent().getProjectCards();
+      renderProjectComponent().renderProjectsList();
+      populateLocalStorage();
+
+      // Reset form validation messages
+      taskTitle.setCustomValidity('');
+      taskDate.setCustomValidity('');
+      const radios = document.querySelectorAll('input[name="priority"]');
+      radios.forEach((radio) => {
+        radio.setCustomValidity('');
+      });
+      projectSelect.setCustomValidity('');
+    }
+
+    taskTitle.reportValidity();
+    taskDate.reportValidity();
+    projectSelect.reportValidity();
+  },
+  onCancel: (modal) => {
+    modal.dialog.close();
+  },
+});
 
 function createInitialSidebarElements() {
   const sidebarDiv = document.querySelector('.sidebar');

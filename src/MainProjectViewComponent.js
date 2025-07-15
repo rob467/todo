@@ -2,13 +2,126 @@ import { sharedProjectsFactory } from './CreateProjects.js';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { createHtmlEl, createHtmlLabelInput } from './AddDOMComponents.js';
 import { renderProjectComponent } from './ProjectsComponent.js';
-import { editTaskModal } from './EditTaskModal.js';
+import TaskModal from './TaskModal.js';
 import populateLocalStorage from './LoadLocalStorage.js';
 
 import maxBtn from './svgs/maximize-solid.svg';
 
 const sharedProjects = sharedProjectsFactory();
-console.log(sharedProjects.projects);
+
+const editTaskModal = TaskModal({
+  mode: 'edit',
+  onSave: (data, modal) => {
+    const prefix = 'edit-';
+
+    // Get form elements
+    const taskTitle = modal.form.querySelector(`#${prefix}task-title`);
+    const taskDate = modal.form.querySelector(`#${prefix}task-date`);
+    const projectSelect = modal.form.querySelector(`#${prefix}project-select`);
+    const radios = modal.form.querySelectorAll(
+      `input[name="${prefix}priority"]`
+    );
+
+    const oldProject = sharedProjects.getProjectByChildTask(
+      parseInt(data['task-id'])
+    );
+    const newProject = sharedProjects.getProjectById(parseInt(data.project));
+    const currentTask = oldProject.getTodo(parseInt(data['task-id']));
+
+    console.log(data)
+    // Reset custom validity messages
+    taskTitle.addEventListener('input', () => {
+      taskTitle.setCustomValidity('');
+    });
+    taskDate.addEventListener('input', () => {
+      taskDate.setCustomValidity('');
+    });
+    radios.forEach((radio) => {
+      radio.addEventListener('input', () => {
+        radio.setCustomValidity('');
+      });
+    });
+    projectSelect.addEventListener('input', () => {
+      projectSelect.setCustomValidity('');
+    });
+
+    // Validation
+    if (data['task-title'].trim() === '') {
+      taskTitle.setCustomValidity('Task title required!');
+      taskTitle.reportValidity();
+      return;
+    }
+    if (data['task-date'].trim() === '') {
+      taskDate.setCustomValidity('Task date required!');
+      taskDate.reportValidity();
+      return;
+    }
+    if (!data[`${prefix}priority`]) {
+      radios.forEach((radio) =>
+        radio.setCustomValidity('Task priority required!')
+      );
+      radios[0].reportValidity();
+      return;
+    }
+    if (projectSelect.value === '') {
+      projectSelect.setCustomValidity('Project selection required!');
+      projectSelect.reportValidity();
+      return;
+    }
+
+    if (oldProject.id !== newProject.id) {
+      // If the project has changed, remove the task from the old project and add it to the new project
+      oldProject.removeTodo(currentTask.id);
+      newProject.addTodo(
+        data['task-title'],
+        data['task-date'],
+        data[`${prefix}priority`],
+        data['task-description'],
+        currentTask.id // Preserve the task ID
+      );
+    } else {
+      currentTask.editTodo(
+        data['task-title'],
+        data['task-date'],
+        data[`${prefix}priority`],
+        data['task-description']
+      );
+    }
+    modal.dialog.close();
+    modal.form.reset();
+    taskDate.valueAsDate = new Date();
+
+    renderMainProjectComponent().getProjectCards();
+    renderProjectComponent().renderProjectsList();
+    populateLocalStorage();
+
+    // Reset form validation messages
+    taskTitle.setCustomValidity('');
+    taskDate.setCustomValidity('');
+    radios.forEach((radio) => {
+      radio.setCustomValidity('');
+    });
+    projectSelect.setCustomValidity('');
+
+    taskTitle.reportValidity();
+    taskDate.reportValidity();
+    projectSelect.reportValidity();
+  },
+  onCancel: (modal) => {
+    modal.dialog.close();
+  },
+
+  onDelete: (data, modal) => {
+    sharedProjects
+      .getProjectById(parseInt(data.project))
+      .removeTodo(parseInt(data['task-id']));
+    renderMainProjectComponent().getProjectCards();
+    renderProjectComponent().renderProjectsList();
+    modal.dialog.close();
+    modal.form.reset();
+    populateLocalStorage();
+  },
+});
 
 function renderMainProjectComponent() {
   const mainDiv = document.querySelector('.main');
@@ -77,7 +190,7 @@ function renderMainProjectComponent() {
     const titleHeading = createHtmlEl({
       tag: 'h5',
       parent: taskTextDiv,
-      props: { id: `heading-${task.id}` },
+      props: { id: `heading-${task.id}`, className: 'main-task-text-title' },
       textContent: ` ${task.title}`,
     });
 
@@ -89,14 +202,16 @@ function renderMainProjectComponent() {
     });
 
     taskTextDiv.onclick = () => {
-      document.querySelector('#edit-title').value = task.title;
-      document.querySelector('#edit-date').valueAsDate = new Date(task.dueDate);
-      document.querySelector('#task-id').value = task.id;
-      document.querySelector('#edit-project-select').value = project.id;
-      document
-        .querySelector(`#edit-priority-${task.priority}`)
-        .setAttribute('checked', true);
-      document.querySelector('#edit-description').value = task.description;
+      const taskData = {
+        title: task.title,
+        dueDate: task.dueDate,
+        priority: task.priority,
+        description: task.description,
+        id: task.id,
+        project: project.id,
+      };
+
+      editTaskModal.prefill(taskData);
       editTaskModal.open();
     };
   }
