@@ -1,13 +1,14 @@
 import { createHtmlEl, removeAllChildren } from './AddDOMComponents.js';
 import { sharedProjectsFactory } from './CreateProjects.js';
-import { renderMainProjectComponent } from './MainProjectViewComponent.js';
 import createModal from './ModalComponent.js';
 import populateLocalStorage from './LoadLocalStorage.js';
+import rerenderApp from './AppRenderer.js';
 
 const sharedProjects = sharedProjectsFactory();
 
 const projectModal = createModal({
   id: 'project-dialog',
+  formProps: { className: 'form-dialog' },
   parent: document.querySelector('.main'),
   content: [
     {
@@ -51,8 +52,7 @@ const projectModal = createModal({
         // Rendering & updating task form to include new projects
         updateAddTaskForm('#project-select');
         updateAddTaskForm('#edit-project-select');
-        renderMainProjectComponent().getProjectCards();
-        renderProjectComponent().renderProjectsList();
+        rerenderApp();
         populateLocalStorage();
       }
       projectTitle.reportValidity();

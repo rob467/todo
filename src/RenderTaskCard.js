@@ -1,15 +1,14 @@
 import { formatCloseDates } from './DateUtils.js';
 import { createHtmlEl, createHtmlLabelInput } from './AddDOMComponents.js';
 import populateLocalStorage from './LoadLocalStorage.js';
-import { renderProjectComponent } from './ProjectsComponent.js';
-import { renderMainProjectComponent } from './MainProjectViewComponent.js';
+import rerenderApp from './AppRenderer.js';
 
-export function renderTaskTitleBlock(task, project, parentDiv) {
+export function renderTaskTitleBlock(task, project, parentDiv, className) {
   const taskDiv = createHtmlEl({
     tag: 'div',
     parent: parentDiv,
     props: {
-      className: `task-main`,
+      className: `${className}`,
       id: `container-task-${task.id}`,
     },
   });
@@ -27,15 +26,30 @@ export function renderTaskTitleBlock(task, project, parentDiv) {
   taskCheckbox.onclick = () => {
     project.removeTodo(task.id);
     taskDiv.remove();
-    renderProjectComponent().renderProjectsList();
-    renderMainProjectComponent().getProjectCards();
+    if (parentDiv.querySelector('.expanded-task-description')) {
+      parentDiv.querySelector('.expanded-task-description').remove();
+    }
+
+    rerenderApp();
     populateLocalStorage();
   };
 
-  const taskHeading = document.createElement('div');
-  taskHeading.className = 'task-item';
-  taskHeading.textContent = `${task.title} - ${formatCloseDates(task.dueDate)}`;
-  taskDiv.appendChild(taskHeading);
+  const taskInfoDiv = document.createElement('div');
+  taskInfoDiv.className = 'task-item';
+  createHtmlEl({
+    tag: 'h5',
+    parent: taskInfoDiv,
+    props: { className: 'main-task-text-title' },
+    textContent: ` ${task.title}`,
+  });
 
-  return taskHeading;
+  createHtmlEl({
+    tag: 'h5',
+    parent: taskInfoDiv,
+    props: { className: 'main-task-text-title' },
+    textContent: formatCloseDates(task.dueDate),
+  });
+  taskDiv.appendChild(taskInfoDiv);
+
+  return taskInfoDiv;
 }

@@ -1,10 +1,11 @@
-import renderCalendarList from './CalendarComponent.js';
 import { createHtmlEl } from './AddDOMComponents.js';
 import { projectModal } from './ProjectsComponent.js';
 import { taskComponent } from './AddTaskComponent.js';
 import TaskModal from './TaskModal.js';
 import { renderMainProjectComponent } from './MainProjectViewComponent.js';
+import rerenderApp from './AppRenderer.js';
 import { renderProjectComponent } from './ProjectsComponent.js';
+import { renderCalendarList } from './CalendarComponent.js';
 import { sharedProjectsFactory } from './CreateProjects.js';
 import populateLocalStorage from './LoadLocalStorage.js';
 const sharedProjects = sharedProjectsFactory();
@@ -22,7 +23,6 @@ const addTaskModal = TaskModal({
       `input[name="${prefix}priority"]`
     );
 
-    console.log(data);
     // Reset custom validity messages
     taskTitle.addEventListener('input', () => {
       taskTitle.setCustomValidity('');
@@ -66,8 +66,7 @@ const addTaskModal = TaskModal({
       modal.form.reset();
       document.querySelector(`#${prefix}task-date`).valueAsDate = new Date();
 
-      renderMainProjectComponent().getProjectCards();
-      renderProjectComponent().renderProjectsList();
+      rerenderApp();
       populateLocalStorage();
 
       // Reset form validation messages
@@ -95,7 +94,12 @@ function createInitialSidebarElements() {
   const addTaskBtn = createHtmlEl({
     tag: 'button',
     parent: sidebarDiv,
-    props: { id: 'add-task-btn' },
+    props: {
+      id: 'add-task-btn',
+      className: 'sidebar-btn',
+      'aria-label': 'Add Task',
+      title: 'Add Task',
+    },
     textContent: 'Add Task',
   });
 
@@ -123,6 +127,9 @@ function createInitialSidebarElements() {
     props: {
       id: 'add-project-btn',
       type: 'submit',
+      className: 'sidebar-btn add-project-btn',
+      'aria-label': 'Add Project',
+      title: 'Add Project',
     },
     textContent: '+',
   });

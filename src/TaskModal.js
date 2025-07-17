@@ -48,6 +48,7 @@ function TaskModal({
     {
       type: 'radio-group',
       name: `${prefix}priority`,
+      labelText: 'Priority: ',
       options: [
         { label: 'High', value: 'high' },
         { label: 'Medium', value: 'medium' },
@@ -59,6 +60,7 @@ function TaskModal({
     },
     {
       type: 'select',
+      labelText: 'Project: ',
       props: { name: 'project', id: `${prefix}project-select` },
       options: projectOptions,
       selected: taskData.project || '',
@@ -109,6 +111,7 @@ function TaskModal({
 
   const modalInstance = createModal({
     id: mode === 'edit' ? 'edit-task-dialog' : 'add-task-dialog',
+    className: mode === 'edit' ? 'edit-task-dialog' : 'add-task-dialog',
     parent: document.querySelector('.main'),
     formProps: { className: 'form-dialog' },
     content,

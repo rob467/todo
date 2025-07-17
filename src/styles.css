@@ -1,3 +1,10 @@
+body {
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  background: #e6f0fa;
+  color: #171717;
+  margin: 0;
+}
+
 .hero {
   display: grid;
   grid-template-columns: 1fr 5fr;
@@ -23,11 +30,30 @@ button:hover {
   cursor: pointer;
 }
 
-.form-dialog {
-  background-color: aliceblue;
-  max-width: 250px;
-  min-height: 100px;
+dialog {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 6px rgba(0,0,0,0.10);
+  padding: 0;
   margin: auto;
+  background: #f8fbff;
+}
+
+.form-dialog {
+  background-color: #f8fbff;
+  min-height: 120px;
+  margin: auto;
+  padding: 24px 20px 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+dialog::backdrop {
+  background: rgba(15, 55, 94, 0.25);
+  backdrop-filter: blur(2px);
 }
 
 ul {
@@ -47,14 +73,21 @@ ul {
 }
 
 .logo-svg-small {
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
 }
 
-.calendar-list {
+.calendar-list-item {
   display: flex;
   gap: 5px;
   margin: 5px;
+  font-weight: 600;
+}
+
+.calendar-tasks {
+  margin: 5px;
+  padding: 0;
+  font-size: 0.9rem;
 }
 
 .main-projects-container {
@@ -68,23 +101,31 @@ ul {
 .project-card {
   min-height: 200px;
   min-width: 200px;
-  /* max-width: 150px; */
   color:#171717;
-  background-color: #96b3d1;
-  border: 1px solid black;
-  border-radius: 10px;
+  background-color: #c2d6ee;
+  border: 2px solid #235a96;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   align-items: center;
+  box-shadow: 0 4px 16px rgba(15,55,94,0.13);
 }
 
 .task-main,
 .project-heading {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   min-width: 180px;
   align-items: center;
+  width: 100%;
+  padding: 0 10px;
+}
+
+
+h3, h5 {
+  margin: 0;
+  font-weight: 600;
+  color: #0f375e;
 }
 
 .task-marked-completed {
@@ -97,16 +138,97 @@ ul {
   justify-content: space-between;
   align-items: start;
   width: 85%;
+  border:#171717 solid 1px;
 }
 
 .main-task-text-title {
   width: 60%;
 }
 
+.task-item {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  padding: 5px;
+  width: 85%;
+  justify-content: space-between;
+}
+
 .btns-div {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-end;
   align-items: center;
+  gap: 12px;
+}
+
+.btns-div button {
+  background-color: #0f375e;
+  color: #E6F0FA;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 1em;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btns-div button:hover {
+  background: #235a96;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.sidebar-btn {
+  background-color: #c2d6ee;
+  color: #235a96;
+  border: solid 1px #E6F0FA;
+  border-radius: 7px;
+  padding: 6px 18px;
+  font-weight: 600;
+  font-size: 1em;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sidebar-btn:hover {
+  background: #e6f0fa;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.add-project-btn {
+  font-size: 1.2em;
+  border-radius: 10px;
+  padding: 4px 12px;
+}
+
+.form-dialog label,
+.radio-group {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #0f375e;
+}
+
+.form-dialog input,
+.form-dialog select,
+.form-dialog textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 5px;
+  border: 1px solid #b3c6e0;
+  color:#0f375e;
+  background: #f0f6fc;
+  margin-bottom: 10px;
+  font-size: 1em;
+  transition: border 0.2s;
+}
+
+.form-dialog input:focus,
+.form-dialog select:focus,
+.form-dialog textarea:focus {
+  border: 1.5px solid #235a96;
+  outline: none;
+  background: #e6f0fa;
 }
 
 .priorities-div {
@@ -116,4 +238,39 @@ ul {
 .radio-group {
   display: flex;
   gap: 5px;
+}
+
+.radio-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0px;
+}
+
+.radio-input-wrapper label,
+.radio-input-wrapper input {
+  font-weight: 400;
+  color: #0f375e;
+  margin-bottom: 0px;
+}
+
+.expanded-project-dialog {
+  min-width: 350px;
+}
+
+.expanded-project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: none;
+  margin: auto;
+}
+
+.task-heading {
+  font-weight: bold;
+  font-size: 1.2em;
+  display: flex;
+  justify-self: space-between;
+  align-items: center;
+  width: 80%;
 }

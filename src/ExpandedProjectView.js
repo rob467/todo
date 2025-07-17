@@ -14,7 +14,8 @@ const sharedProjects = sharedProjectsFactory();
 const expandedProjectModal = createModal({
   id: 'expanded-project-dialog',
   parent: document.querySelector('.main'),
-  formProps: { className: 'form-dialog' },
+  className: 'expanded-project-dialog',
+  formProps: { className: 'form-dialog expanded-project-form' },
   content: [],
   buttons: {
     save: (modal) => {
@@ -89,15 +90,18 @@ function openExpandedProjectModal(projectId) {
             tag: 'div',
             parent: taskContainer,
             props: {
-              className: 'task-main',
+              className: 'expanded-task-div',
             },
           });
-          renderTaskTitleBlock(task, project, taskDiv);
-          
+          renderTaskTitleBlock(task, project, taskDiv, 'task-heading');
+
           if (task.description) {
-            const taskDescription = document.createElement('div');
-            taskDescription.textContent = task.description;
-            taskContainer.appendChild(taskDescription);
+            createHtmlEl({
+              tag: 'div',
+              parent: taskDiv,
+              props: { className: 'expanded-task-description' },
+              textContent: task.description,
+            });
           }
           mainTaskContainer.appendChild(taskContainer);
         });

@@ -83,6 +83,10 @@ const sharedProjectsFactory = (() => {
         getProjectByChildTask(taskId) {
           return this.projects.find((project) => project.getTodo(taskId));
         },
+        
+        getAllTodos() {
+          return this.projects.flatMap((project) => project.getAllTodos());
+        },
       };
     }
     return instance;

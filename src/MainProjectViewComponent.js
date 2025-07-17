@@ -4,7 +4,8 @@ import { renderProjectComponent } from './ProjectsComponent.js';
 import TaskModal from './TaskModal.js';
 import populateLocalStorage from './LoadLocalStorage.js';
 import { openExpandedProjectModal } from './ExpandedProjectView.js';
-import { formatCloseDates } from './DateUtils.js';
+import { renderTaskTitleBlock } from './RenderTaskCard.js';
+import rerenderApp from './AppRenderer.js';
 
 import maxBtn from './svgs/maximize-solid.svg';
 
@@ -29,7 +30,6 @@ const editTaskModal = TaskModal({
     const newProject = sharedProjects.getProjectById(parseInt(data.project));
     const currentTask = oldProject.getTodo(parseInt(data['task-id']));
 
-    console.log(data)
     // Reset custom validity messages
     taskTitle.addEventListener('input', () => {
       taskTitle.setCustomValidity('');
@@ -92,8 +92,7 @@ const editTaskModal = TaskModal({
     modal.form.reset();
     taskDate.valueAsDate = new Date();
 
-    renderMainProjectComponent().getProjectCards();
-    renderProjectComponent().renderProjectsList();
+    rerenderApp();
     populateLocalStorage();
 
     // Reset form validation messages
@@ -116,10 +115,9 @@ const editTaskModal = TaskModal({
     sharedProjects
       .getProjectById(parseInt(data.project))
       .removeTodo(parseInt(data['task-id']));
-    renderMainProjectComponent().getProjectCards();
-    renderProjectComponent().renderProjectsList();
     modal.dialog.close();
     modal.form.reset();
+    rerenderApp();
     populateLocalStorage();
   },
 });
@@ -147,52 +145,14 @@ function renderMainProjectComponent() {
   function renderTaskDetails(task, project) {
     const projectDiv = document.querySelector(`#card-${project.id}`);
 
-    const taskDiv = createHtmlEl({
-      tag: 'div',
-      parent: projectDiv,
-      props: {
-        className: `task-main`,
-        id: `container-task-${task.id}`,
-      },
-    });
+    const taskHeading = renderTaskTitleBlock(
+      task,
+      project,
+      projectDiv,
+      'task-heading'
+    );
 
-    const taskCheckbox = createHtmlLabelInput({
-      parent: taskDiv,
-      createDiv: true,
-      inputProps: {
-        id: `check-${task.id}`,
-      },
-      inputType: 'checkbox',
-      reverseInputOrder: true,
-    });
-
-    taskCheckbox.onclick = () => {
-      project.removeTodo(task.id);
-      taskDiv.remove();
-      renderProjectComponent().renderProjectsList();
-      populateLocalStorage();
-    };
-
-    const taskTextDiv = createHtmlEl({
-      parent: taskDiv,
-      props: { className: 'task-text-div' },
-    });
-
-    const titleHeading = createHtmlEl({
-      tag: 'h5',
-      parent: taskTextDiv,
-      props: { id: `heading-${task.id}`, className: 'main-task-text-title' },
-      textContent: ` ${task.title}`,
-    });
-
-    const dateHeading = createHtmlEl({
-      tag: 'h5',
-      parent: taskTextDiv,
-      props: { id: `heading-date-${task.id}` },
-      textContent: formatCloseDates(task.dueDate),
-    });
-
-    taskTextDiv.onclick = () => {
+    taskHeading.onclick = () => {
       const taskData = {
         title: task.title,
         dueDate: task.dueDate,

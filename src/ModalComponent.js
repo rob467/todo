@@ -4,6 +4,7 @@ import deleteBtnSVG from './svgs/trash-solid.svg';
 function createModal({
   id,
   parent,
+  className,
   formProps = {},
   content = [],
   buttons = {},
@@ -11,7 +12,7 @@ function createModal({
   const dialog = createHtmlEl({
     tag: 'dialog',
     parent: parent,
-    props: { id: id, className: 'form-dialog' },
+    props: { id: id, className: className },
   });
 
   const form = createHtmlEl({
@@ -38,6 +39,7 @@ function createModal({
       const radioDiv = createHtmlEl({
         parent: form,
         props: { className: item.wrapperClass || 'radio-group' },
+        textContent: item.labelText || '',
       });
 
       item.options.forEach((option) => {
@@ -49,15 +51,31 @@ function createModal({
             value: option.value,
             name: item.name,
           },
+          wrapperProps: { className: 'radio-input-wrapper' },
           labelText: option.label,
           required: item.required || false,
           reverseOrder: item.reverseOrder || false,
         });
       });
     } else if (item.type === 'select') {
+      const selectDiv = createHtmlEl({
+        parent: form,
+        props: { className: 'select-div' },
+      });
+
+      const selectLabel = createHtmlEl({
+        tag: 'label',
+        parent: selectDiv,
+        textContent: item.labelText || '',
+        htmlFor: item.props.id,
+        props: { className: 'select-label' },
+      });
+
       const selectGroup = createHtmlEl({
         tag: 'select',
-        parent: createHtmlEl({ parent: form }),
+        id: item.props.id,
+        name: item.props.name,
+        parent: selectDiv,
         props: item.props,
       });
 
