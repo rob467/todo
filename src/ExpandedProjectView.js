@@ -20,7 +20,8 @@ const expandedProjectModal = createModal({
     save: (modal) => {
       const data = modal.getFormData();
       const project = sharedProjects.getProjectById(parseInt(data.projectId));
-      const editProjectTitleInput = document.querySelector('#edit-project-name');
+      const editProjectTitleInput =
+        document.querySelector('#edit-project-name');
 
       const errorMsg = validateProjectTitle(
         data['edit-project-name'],
@@ -36,8 +37,8 @@ const expandedProjectModal = createModal({
       editProjectTitleInput.setCustomValidity('');
       sharedProjects.editProject(project.name, data['edit-project-name']);
 
-      rerenderApp();
       populateLocalStorage();
+      rerenderApp();
 
       modal.dialog.close();
       modal.form.reset();
@@ -48,14 +49,19 @@ const expandedProjectModal = createModal({
     delete: (modal) => {
       const data = modal.getFormData();
       const project = sharedProjects.getProjectById(parseInt(data.projectId));
+      if (!project) {
+        return;
+      }
       sharedProjects.removeProjectById(project.id);
+      populateLocalStorage();
       rerenderApp();
       modal.dialog.close();
       modal.form.reset();
-      populateLocalStorage();
 
       if (sharedProjects.getAllProjects().length === 0) {
-        projectModal.open();
+        sharedProjects.addProject('Other');
+        rerenderApp();
+        populateLocalStorage();
       }
     },
   },
