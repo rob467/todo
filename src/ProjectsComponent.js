@@ -50,8 +50,6 @@ const projectModal = createModal({
         modal.form.reset();
 
         // Rendering & updating task form to include new projects
-        updateAddTaskForm('#project-select');
-        updateAddTaskForm('#edit-project-select');
         rerenderApp();
         populateLocalStorage();
       }
@@ -88,10 +86,14 @@ function renderProjectComponent() {
     const projectSidebarList = document.querySelector('.projects-sidebar-list');
     removeAllChildren(projectSidebarList);
 
+    const otherProject = sharedProjects.getProject('Other');
+
     sharedProjects
       .getAllProjects()
       .toReversed()
       .forEach((project) => {
+        if (project.name === 'Other' && otherProject.getAllTodos().length === 0)
+          return; // Skip the 'Other' project if empty
         const projectListElement = createHtmlEl({
           tag: 'li',
           parent: projectSidebarList,

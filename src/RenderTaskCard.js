@@ -46,7 +46,7 @@ export function renderTaskTitleBlock(task, project, parentDiv, className) {
   createHtmlEl({
     tag: 'h5',
     parent: taskInfoDiv,
-    props: { className: 'main-task-text-title' },
+    props: { className: 'main-task-text-title task-date' },
     textContent: formatCloseDates(task.dueDate),
   });
   taskDiv.appendChild(taskInfoDiv);

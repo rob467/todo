@@ -30,7 +30,7 @@ class Project {
   }
 
   getAllTodos() {
-    return this.todoList;
+    return this.todoList || [];
   }
 }
 
@@ -40,10 +40,16 @@ const sharedProjectsFactory = (() => {
     if (!instance) {
       let projectsValue;
       if (localStorage.length > 0) {
-        projectsValue = JSON.parse(
-          localStorage.getItem('projects'),
-          revive
-        ).projects;
+        const parsed = JSON.parse(localStorage.getItem('projects'), revive);
+        console.log(localStorage.getItem('projects'));
+        projectsValue = parsed && parsed.projects ? parsed.projects : [];
+        if (projectsValue.length > 0) {
+          Project.projectId = Math.max(
+            ...projectsValue.map((project) => project.id)
+          );
+        } else {
+          Project.projectId = 0;
+        }
       } else {
         projectsValue = [new Project('Other')];
       }
@@ -68,6 +74,10 @@ const sharedProjectsFactory = (() => {
           );
         },
 
+        removeProjectById(id) {
+          this.projects = this.projects.filter((project) => project.id !== id);
+        },
+
         getProject(name) {
           return this.projects.find((project) => project.name === name);
         },
@@ -77,15 +87,17 @@ const sharedProjectsFactory = (() => {
         },
 
         getAllProjects() {
-          return this.projects;
+          return this.projects || [];
         },
 
         getProjectByChildTask(taskId) {
           return this.projects.find((project) => project.getTodo(taskId));
         },
-        
+
         getAllTodos() {
-          return this.projects.flatMap((project) => project.getAllTodos());
+          return (
+            this.projects.flatMap((project) => project.getAllTodos()) || []
+          );
         },
       };
     }

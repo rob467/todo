@@ -1,13 +1,12 @@
 import createModal from './ModalComponent.js';
 import { sharedProjectsFactory } from './CreateProjects.js';
-import { formatCloseDates } from './DateUtils.js';
 import populateLocalStorage from './LoadLocalStorage.js';
-import { renderMainProjectComponent } from './MainProjectViewComponent.js';
-import { renderProjectComponent } from './ProjectsComponent.js';
 import { validateProjectTitle } from './ProjectValidation.js';
 import { renderTaskTitleBlock } from './RenderTaskCard.js';
 import { createHtmlEl } from './AddDOMComponents.js';
+import { projectModal } from './ProjectsComponent.js';
 
+import rerenderApp from './AppRenderer.js';
 
 const sharedProjects = sharedProjectsFactory();
 
@@ -36,9 +35,8 @@ const expandedProjectModal = createModal({
 
       editProjectTitleInput.setCustomValidity('');
       sharedProjects.editProject(project.name, data['edit-project-name']);
-      
-      renderMainProjectComponent().getProjectCards();
-      renderProjectComponent().renderProjectsList();
+
+      rerenderApp();
       populateLocalStorage();
 
       modal.dialog.close();
@@ -49,11 +47,16 @@ const expandedProjectModal = createModal({
     },
     delete: (modal) => {
       const data = modal.getFormData();
-      const project = sharedProjects.getProjectById(data.projectId);
-      sharedProjects.removeProject(project.id);
+      const project = sharedProjects.getProjectById(parseInt(data.projectId));
+      sharedProjects.removeProjectById(project.id);
+      rerenderApp();
       modal.dialog.close();
       modal.form.reset();
       populateLocalStorage();
+
+      if (sharedProjects.getAllProjects().length === 0) {
+        projectModal.open();
+      }
     },
   },
 });

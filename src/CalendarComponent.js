@@ -54,15 +54,14 @@ function renderCalendarList() {
 
 function renderCalendarTasks() {
   const calendarItems = document.querySelectorAll('.calendar-item-container');
-  console.log(calendarItems);
   calendarItems.forEach((item) => {
     const symbol = item.querySelector('span').textContent;
-    console.log(symbol);
     const todoCalendarList = item.querySelector('.calendar-tasks');
     while (todoCalendarList.firstChild) {
       todoCalendarList.removeChild(todoCalendarList.firstChild);
     }
     const todos = sharedProjects.getAllTodos();
+    if (!todos || todos.length === 0) return;
     todos.forEach((todo) => {
       const todoDate = new Date(todo.dueDate);
       let dateText = '';

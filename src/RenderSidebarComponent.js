@@ -2,12 +2,11 @@ import { createHtmlEl } from './AddDOMComponents.js';
 import { projectModal } from './ProjectsComponent.js';
 import { taskComponent } from './AddTaskComponent.js';
 import TaskModal from './TaskModal.js';
-import { renderMainProjectComponent } from './MainProjectViewComponent.js';
 import rerenderApp from './AppRenderer.js';
-import { renderProjectComponent } from './ProjectsComponent.js';
-import { renderCalendarList } from './CalendarComponent.js';
+import { renderCalendarList, renderCalendarTasks } from './CalendarComponent.js';
 import { sharedProjectsFactory } from './CreateProjects.js';
 import populateLocalStorage from './LoadLocalStorage.js';
+
 const sharedProjects = sharedProjectsFactory();
 
 const addTaskModal = TaskModal({
@@ -108,6 +107,7 @@ function createInitialSidebarElements() {
   };
 
   renderCalendarList();
+  renderCalendarTasks();
 
   const projectHeadingDiv = createHtmlEl({
     tag: 'div',

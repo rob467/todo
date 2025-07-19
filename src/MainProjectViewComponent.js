@@ -1,6 +1,5 @@
 import { sharedProjectsFactory } from './CreateProjects.js';
 import { createHtmlEl, createHtmlLabelInput } from './AddDOMComponents.js';
-import { renderProjectComponent } from './ProjectsComponent.js';
 import TaskModal from './TaskModal.js';
 import populateLocalStorage from './LoadLocalStorage.js';
 import { openExpandedProjectModal } from './ExpandedProjectView.js';
@@ -209,10 +208,19 @@ function renderMainProjectComponent() {
       sortedByDateProjects.forEach((task) => renderTaskDetails(task, project));
     }
 
+    const otherProjects = sharedProjects.getProject('Other');
+
     sharedProjects
       .getAllProjects()
       .toReversed()
-      .forEach((project) => createProjectCard(project));
+      .forEach((project) => {
+        if (
+          project.name === 'Other' &&
+          otherProjects.getAllTodos().length === 0
+        )
+          return; // Skip the 'Other' project if empty
+        createProjectCard(project);
+      });
   }
   return { getProjectCards, renderTaskDetails };
 }
